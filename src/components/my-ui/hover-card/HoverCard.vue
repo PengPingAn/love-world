@@ -5,11 +5,12 @@
     @mousemove="handleMove"
     @mouseleave="reset"
     :style="style"
+    :class="{ 'card-bg': card }"
   >
     <div class="card">
       <div class="fl">
         <div class="data">
-          <div class="img">1111</div>
+          <img class="img" src="https://q9.itc.cn/q_70/images03/20241013/d770472d4906402c866b9c71a0c9927c.jpeg"/>
           <div class="text">
             <div class="text_m">CSS Theme Switch</div>
             <div class="text_s">Praashoo7</div>
@@ -59,6 +60,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+const props = defineProps({
+  card: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const style = ref("");
 const maxOffset = 20;
 
@@ -82,14 +90,16 @@ function reset() {
 .card {
   margin: auto;
   height: 11em;
-  // background-color: #ffffff;
   border-radius: 7px;
   cursor: pointer;
   border: 1px dashed;
-  // box-shadow: rgba(99, 99, 99, 0.3) 0px 2px 8px 0px;
   border-color: rgba(162, 179, 207, 0.2);
   position: relative;
   transition: transform 0.1s ease-out;
+  &-bg {
+    box-shadow: rgba(99, 99, 99, 0.3) 0px 2px 8px 0px;
+    background-color: #ffffff;
+  }
 }
 
 .fl {
@@ -135,7 +145,7 @@ function reset() {
 .card_back {
   position: absolute;
   height: 0em;
-  background-color: rgba(218, 215, 217, 0.575);
+  background-color: rgba(218, 215, 217, 0.315);
   border-radius: 7px;
   transition: 0.2s ease-in-out;
   z-index: -1;
@@ -166,7 +176,6 @@ function reset() {
 .img {
   width: 2.25em;
   height: 2.25em;
-  background-color: #252525;
   border-radius: 5px;
   overflow: hidden;
 }

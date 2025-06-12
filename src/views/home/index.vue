@@ -119,7 +119,7 @@
 
   <div class="grid grid-cols-1 [@media(min-width:1200px)]:grid-cols-2">
     <div class="m-4" v-for="item in 3" :key="item" @click="jumpDetails">
-      <HoverCard></HoverCard>
+      <HoverCard :card="true"></HoverCard>
     </div>
   </div>
 
