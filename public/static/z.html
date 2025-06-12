@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue3 图片瀑布流效果</title>
+    <script src="https://unpkg.com/vue@3.2.31/dist/vue.global.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #00c9ff, #92fe9d);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            color: #a0a0c0;
+            font-size: 1.3rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .waterfall-container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .waterfall-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .waterfall-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .waterfall-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .item-image {
+            width: 100%;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        
+        .waterfall-item:hover .item-image {
+            transform: scale(1.05);
+        }
+        
+        .item-content {
+            padding: 20px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .waterfall-item:hover .item-content {
+            opacity: 1;
+        }
+        
+        .item-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .item-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .item-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background: rgba(59, 130, 246, 0.3);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 30px;
+            font-size: 1.2rem;
+            color: #a0a0c0;
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #3b82f6;
+            margin-left: 5px;
+            animation: loadingDots 1.5s infinite;
+        }
+        
+        @keyframes loadingDots {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00c9ff, #92fe9d);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .stat-label {
+            color: #a0a0c0;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 60px;
+            color: #a0a0c0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .waterfall-container {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <header>
+                <h1>Vue3 图片瀑布流效果</h1>
+                <p class="subtitle">响应式布局、平滑过渡、优雅悬停效果</p>
+            </header>
+            
+            <div class="controls">
+                <button class="btn" @click="loadMore">加载更多图片</button>
+                <button class="btn btn-outline" @click="toggleColumns">
+                    切换列数 ({{ columns }}列)
+                </button>
+                <button class="btn btn-outline" @click="shuffleImages">
+                    随机排序图片
+                </button>
+            </div>
+            
+            <div class="waterfall-container" :style="{ gap: gapSize + 'px' }">
+                <div class="waterfall-column" v-for="(column, index) in columnItems" :key="index">
+                    <div 
+                        class="waterfall-item" 
+                        v-for="(item, itemIndex) in column" 
+                        :key="item.id"
+                        :style="{ height: item.height + 'px' }"
+                    >
+                        <img 
+                            :src="item.src" 
+                            :alt="item.title" 
+                            class="item-image"
+                            :style="{ height: item.height + 'px' }"
+                        >
+                        <div class="item-content">
+                            <h3 class="item-title">{{ item.title }}</h3>
+                            <p class="item-description">{{ item.description }}</p>
+                            <div class="item-tags">
+                                <span class="tag" v-for="(tag, tagIndex) in item.tags" :key="tagIndex">
+                                    {{ tag }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="loading" v-if="loading">
+                正在加载更多图片...
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value">{{ images.length }}</div>
+                    <div class="stat-label">总图片数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ columns }}</div>
+                    <div class="stat-label">列数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ gapSize }}px</div>
+                    <div class="stat-label">间距</div>
+                </div>
+            </div>
+            
+            <footer>
+                <p>Vue3 瀑布流组件 | 使用 Composition API 实现 | 响应式设计</p>
+                <p>支持动态加载、列数调整和图片排序</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, onMounted } = Vue;
+        
+        // 图片数据
+        const imageData = [
+            {
+                id: 1,
+                title: "山间日出",
+                description: "清晨的第一缕阳光穿过群山，照亮了整个世界",
+                tags: ["自然", "日出", "山脉"],
+                height: 400
+            },
+            {
+                id: 2,
+                title: "湖边小屋",
+                description: "宁静的湖边小屋，倒映在清澈的湖水中",
+                tags: ["建筑", "湖泊", "宁静"],
+                height: 320
+            },
+            {
+                id: 3,
+                title: "森林小径",
+                description: "阳光透过树叶洒在蜿蜒的森林小径上",
+                tags: ["森林", "小径", "阳光"],
+                height: 380
+            },
+            {
+                id: 4,
+                title: "城市夜景",
+                description: "灯火辉煌的城市夜景，展现现代都市的魅力",
+                tags: ["城市", "夜景", "灯光"],
+                height: 450
+            },
+            {
+                id: 5,
+                title: "海滩日落",
+                description: "金色的夕阳洒在波光粼粼的海面上",
+                tags: ["海滩", "日落", "海洋"],
+                height: 360
+            },
+            {
+                id: 6,
+                title: "雪山之巅",
+                description: "壮丽的雪山在蓝天下闪耀着银光",
+                tags: ["雪山", "高山", "自然"],
+                height: 420
+            },
+            {
+                id: 7,
+                title: "沙漠星空",
+                description: "浩瀚的沙漠上空，繁星点点，银河清晰可见",
+                tags: ["沙漠", "星空", "银河"],
+                height: 340
+            },
+            {
+                id: 8,
+                title: "古堡遗迹",
+                description: "历经沧桑的古堡遗迹，诉说着历史的故事",
+                tags: ["古堡", "历史", "建筑"],
+                height: 390
+            },
+            {
+                id: 9,
+                title: "田园风光",
+                description: "金黄的麦田在微风中摇曳，乡村的宁静之美",
+                tags: ["田园", "乡村", "麦田"],
+                height: 310
+            },
+            {
+                id: 10,
+                title: "瀑布奇观",
+                description: "壮观的瀑布从悬崖倾泻而下，水雾弥漫",
+                tags: ["瀑布", "自然", "水景"],
+                height: 470
+            }
+        ];
+        
+        // 图片URL数组
+        const imageUrls = [
+            "https://images.unsplash.com/photo-1501854140801-50d01698950b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1433086966358-54859d0ed716?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1511497584788-876760111969?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1476820865390-c52aeebb9891?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1510784722466-f2aa9c52fff6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+        ];
+        
+        createApp({
+            setup() {
+                // 响应式数据
+                const columns = ref(3);
+                const gapSize = ref(20);
+                const images = ref([]);
+                const loading = ref(false);
+                
+                // 初始化图片数据
+                const initImages = () => {
+                    const initialImages = imageData.map((item, index) => {
+                        return {
+                            ...item,
+                            src: imageUrls[index % imageUrls.length]
+                        };
+                    });
+                    images.value = initialImages;
+                };
+                
+                // 计算瀑布流列数据
+                const columnItems = computed(() => {
+                    const cols = Array.from({ length: columns.value }, () => []);
+                    
+                    images.value.forEach((image, index) => {
+                        // 简单轮询分配列
+                        const colIndex = index % columns.value;
+                        cols[colIndex].push(image);
+                    });
+                    
+                    return cols;
+                });
+                
+                // 加载更多图片
+                const loadMore = () => {
+                    loading.value = true;
+                    
+                    setTimeout(() => {
+                        const newImages = [...Array(5)].map((_, i) => {
+                            const randomIndex = Math.floor(Math.random() * imageData.length);
+                            const randomHeight = Math.floor(Math.random() * 100) + 300;
+                            const randomImg = Math.floor(Math.random() * imageUrls.length);
+                            
+                            return {
+                                id: images.value.length + i + 1,
+                                title: imageData[randomIndex].title,
+                                description: imageData[randomIndex].description,
+                                tags: [...imageData[randomIndex].tags],
+                                height: randomHeight,
+                                src: imageUrls[randomImg]
+                            };
+                        });
+                        
+                        images.value = [...images.value, ...newImages];
+                        loading.value = false;
+                    }, 1000);
+                };
+                
+                // 切换列数
+                const toggleColumns = () => {
+                    columns.value = columns.value % 4 + 2;
+                };
+                
+                // 随机排序图片
+                const shuffleImages = () => {
+                    images.value = [...images.value].sort(() => Math.random() - 0.5);
+                };
+                
+                // 初始化
+                onMounted(() => {
+                    initImages();
+                });
+                
+                return {
+                    columns,
+                    gapSize,
+                    images,
+                    loading,
+                    columnItems,
+                    loadMore,
+                    toggleColumns,
+                    shuffleImages
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
