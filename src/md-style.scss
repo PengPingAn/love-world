@@ -333,3 +333,51 @@
     }
 }
 
+.md-collapse {
+    // border: 1px solid #eee;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 1em 0;
+    transition: all 1.4s ease;
+}
+
+.md-collapse-title {
+    // background: #ffc0cb33;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.md-collapse-body {
+    border-radius: 6px;
+    height: 0;
+    overflow: hidden;
+    will-change: height;
+    transition: height 1s cubic-bezier(0.25, 1.5, 0.5, 1); // 弹性曲线
+}
+
+
+.md-collapse-body.open {
+    /* 用 JS 动态计算高度 */
+    background: #ffc0cb33;
+}
+
+.md-collapse-inner {
+    padding: 10px;
+    background: #fff0f5;
+    animation: bounceIn 0.3s ease;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scaleY(0.95);
+    }
+
+    50% {
+        transform: scaleY(1.05);
+    }
+
+    100% {
+        transform: scaleY(1);
+    }
+}

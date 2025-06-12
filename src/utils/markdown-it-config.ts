@@ -130,6 +130,49 @@ export const customPlugin = (md) => {
         return true;
     });
 
+    md.block.ruler.before('fence', 'collapse', (state, startLine, endLine, silent) => {
+        const start = state.bMarks[startLine] + state.tShift[startLine];
+        const max = state.eMarks[startLine];
+        const line = state.src.slice(start, max);
+    
+        if (!line.startsWith(':::collapse')) return false;
+    
+        const titleMatch = line.match(/title=(.*)/);
+        const title = titleMatch ? titleMatch[1].trim() : '展开内容';
+    
+        let nextLine = startLine + 1;
+        let content = '';
+    
+        while (nextLine < endLine) {
+          const pos = state.bMarks[nextLine] + state.tShift[nextLine];
+          const maxPos = state.eMarks[nextLine];
+          const lineText = state.src.slice(pos, maxPos);
+    
+          if (lineText.startsWith(':::')) break;
+    
+          content += lineText + '\n';
+          nextLine++;
+        }
+    
+        if (silent) return true;
+    
+        state.line = nextLine + 1;
+    
+        const renderedContent = md.render(content);
+    
+        const token = state.push('html_block', '', 0);
+        token.content = `
+          <div class="md-collapse">
+            <div class="md-collapse-title">${title}</div>
+            <div class="md-collapse-body">
+              <div class="md-collapse-inner open">${renderedContent}</div>
+            </div>
+          </div>
+        `;
+    
+        return true;
+      });
+
     md.inline.ruler.before('text', 'highlight', (state) => {
         const start = state.pos;
         const match = state.src.slice(start).match(/^==([^=]+?)==/);
@@ -327,6 +370,13 @@ export const customPlugin = (md) => {
                 </div>
             </div>`;
     };
+
+    md.renderer.rules.highlight = (tokens, idx) => {
+        const token = tokens[idx];
+        return `<mark class="${token.attrs[0][1]}">
+                  <span class="mark-span">${token.content}</span>
+                </mark>`;
+      };
     // console.log('Updated inline rulers:', md.block.ruler.__rules__.map(r => r.name));
 };
 
