@@ -10,7 +10,10 @@
     <div class="card">
       <div class="fl">
         <div class="data">
-          <img class="img" src="https://q9.itc.cn/q_70/images03/20241013/d770472d4906402c866b9c71a0c9927c.jpeg"/>
+          <img
+            class="img"
+            src="https://q9.itc.cn/q_70/images03/20241013/d770472d4906402c866b9c71a0c9927c.jpeg"
+          />
           <div class="text">
             <div class="text_m">CSS Theme Switch</div>
             <div class="text_s">Praashoo7</div>
@@ -58,31 +61,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue'
 
 const props = defineProps({
   card: {
     type: Boolean,
-    default: false,
-  },
-});
+    default: false
+  }
+})
 
-const style = ref("");
-const maxOffset = 20;
+const style = ref('')
+const maxOffset = 20
+let frameId: number | null = null
 
-function handleMove(e) {
-  const rect = e.currentTarget.getBoundingClientRect();
-  const offsetX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-  const offsetY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+function handleMove(e: MouseEvent) {
+  if (frameId) cancelAnimationFrame(frameId)
 
-  const x = offsetX * maxOffset;
-  const y = offsetY * maxOffset;
+  const target = e.currentTarget as HTMLElement
+  const rect = target.getBoundingClientRect()
+  const offsetX = ((e.clientX - rect.left) / rect.width - 0.5) * 2
+  const offsetY = ((e.clientY - rect.top) / rect.height - 0.5) * 2
 
-  style.value = `transform: translate(${x}px, ${y}px)`;
+  const x = offsetX * maxOffset
+  const y = offsetY * maxOffset
+
+  frameId = requestAnimationFrame(() => {
+    style.value = `transform: translate(${x}px, ${y}px)`
+  })
 }
 
 function reset() {
-  style.value = `transform: translate(0px, 0px)`;
+  if (frameId) {
+    cancelAnimationFrame(frameId)
+    frameId = null
+  }
+  style.value = `transform: translate(0px, 0px)`
 }
 </script>
 
@@ -323,7 +336,7 @@ function reset() {
 /* The switch - the box around the slider */
 .switch_738 {
   font-size: 1rem;
-  font-family: "Noto Serif SC", serif;
+  font-family: 'Noto Serif SC', serif;
 }
 
 /* Hide default HTML checkbox */
@@ -348,7 +361,7 @@ function reset() {
 
 .slider_738:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 0.5em;
   width: 2.4em;
   border-radius: 5px;
@@ -361,13 +374,12 @@ function reset() {
 
 .slider_738:before,
 .slider_738:after {
-  content: "";
+  content: '';
   display: block;
 }
 
 .slider_738:after {
-  background: linear-gradient(transparent 50%, rgba(255, 255, 255, 0.15) 0) 0 50% / 50%
-      100%,
+  background: linear-gradient(transparent 50%, rgba(255, 255, 255, 0.15) 0) 0 50% / 50% 100%,
     repeating-linear-gradient(
         90deg,
         rgb(255, 255, 255) 0,

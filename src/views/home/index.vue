@@ -127,7 +127,7 @@
   <div class="flex min-h-64 items-center justify-center">
     <RainbowButton> Rainbow Button </RainbowButton>
   </div>
-  <div class="w-full max-w-[85%] mx-auto rounded-lg bottom-8" v-html="html"></div>
+  <!-- <div class="w-full max-w-[85%] mx-auto rounded-lg bottom-8" v-html="html"></div> -->
   <MyModal :title="'祝福留言'" ref="myModal" :lock-scroll="false">
     <div v-for="item in 100" :key="item">我是内容</div>
   </MyModal>
@@ -146,7 +146,7 @@
     previewTheme="github"
     :editorId="editorId"
     :modelValue="content"
-    style="background: transparent; min-height: 90vh;color:var(--font-color)"
+    style="background: transparent; min-height: 90vh; color: var(--font-color)"
   />
 </template>
 
@@ -163,6 +163,18 @@ import 'md-editor-v3/lib/style.css'
 import 'md-editor-v3/lib/preview.css'
 
 const content = ref(`
+:::carousel
+https://ss3.baidu.com/9fo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/18d8bc3eb13533fae0a4ef61acd3fd1f41345b6a.jpg
+https://pic4.zhimg.com/v2-57ed22547faf8635adb245964aee8a0b_r.jpg
+https://www.2008php.com/2013_Website_appreciate/2013-03-17/20130317005445.jpg
+https://p7.itc.cn/q_70/images03/20240101/469a5b2a96a346318d190fd0acfe20c3.jpeg
+https://pic1.zhimg.com/80/v2-2464893e23ed8c3d2760b446015ef8e8_r.jpg
+:::
+
+
+==你好，我是||Chat GPT||，很高兴认识你==。
+||你好，我是Chat GPT，==很高兴认识你==。||
+
 ## # ||==生命的旷野==||
 
 ~~ warning
@@ -185,7 +197,7 @@ PlayerScreen.transparent = true
 
 ==落日西沉，炊烟袅袅。==
 
-村里的环境==恬静==而舒适，深秋的风凉爽而不凛冽。@Pingan[此间别处](https://baidu.com)铁栅栏里是一条不长不短的小径，通往一座矮矮的房子。小径边上有一座小假山和一个小水塘，尚且算作修饰。在小屋的后面可以隐约看见远远的旷野。这是一片广阔之境。
+村里的环境==恬静==而舒适，深秋的风凉爽而不凛冽。@Pingan[此间别处](https://baidu.com)铁栅栏里是一条不长不短的小径，通往一座矮矮的房子。小径边上有一座小假山和一个小水塘，尚且算作修饰。在小屋的@Pingan[此间别处](https://www.xiaohongshu.com/explore/67f0772e000000001c03c216?app_platform=ios&app_version=8.79&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBkEClgWp5ivhriZb0ewmitvTCU6eBGflDb_5bQ1dlbKo=&author_share=1&xhsshare=CopyLink&shareRedId=ODgzMzM1PT82NzUyOTgwNjg0OTk0Sj89&apptime=1745402632&share_id=f3357e8caa26450f8364ee0b937ad4d6)后面可以隐约看见远远的旷野。这是一片广阔之境。
 
 坐在||小方桌旁||，等待饭菜上桌。夹起一口喷香出锅的鸡，配一瓶可乐，一群人围成一顿简单而丰满的晚餐。
 
@@ -526,8 +538,8 @@ const calculateTimeDifference = (targetDateTime) => {
 // 切换主体颜色（直接修改html的类）
 const toggleTheme = () => {
   // myModal.value.open()
-  const htmlElement = document.documentElement; // 获取html元素
-  htmlElement.classList.toggle('dark'); 
+  const htmlElement = document.documentElement // 获取html元素
+  htmlElement.classList.toggle('dark')
 }
 const jumpPage = (url) => {
   console.log(url)

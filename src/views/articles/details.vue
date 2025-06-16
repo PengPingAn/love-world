@@ -3,20 +3,14 @@
     <div class="text-center mb-[4rem]">
       <h1 class="text-4xl font-bold">文章标题</h1>
     </div>
-    <div
-      class="grid grid-cols-[auto_150px] [@media(max-width:1200px)]:grid-cols-none gap-14"
-    >
+    <div class="grid grid-cols-[auto_150px] [@media(max-width:1200px)]:grid-cols-none gap-14">
       <div class="max-w-[1000px]">
         <div ref="componentRef">
           <MdPreview
             previewTheme="github"
             :editorId="editorId"
             :modelValue="content"
-            style="
-              background: transparent;
-              min-height: 90vh;
-              font-family: 'Noto Serif SC', serif;
-            "
+            style="background: transparent; min-height: 90vh; font-family: 'Noto Serif SC', serif"
             @onGetCatalog="onGetCatalog"
           />
         </div>
@@ -31,7 +25,7 @@
           style="max-width: 10rem"
           :style="{
             position: marginTop == 0 ? 'fixed' : '',
-            marginTop: marginTop != 0 ? '6rem' : '0',
+            marginTop: marginTop != 0 ? '6rem' : '0'
           }"
           class="p-side"
         >
@@ -72,8 +66,7 @@
     <div class="flex gap-4 mb-4">
       <div class="h-auto w-[2px] bg-[#e16060]"></div>
       <span class="font-bold text-xl"
-        >2025
-        <span class="text-xs text-[#646464]"> （{{ timelineData.length }}） </span></span
+        >2025 <span class="text-xs text-[#646464]"> （{{ timelineData.length }}） </span></span
       >
     </div>
     <div v-for="(item, index) in timelineData" :key="index" class="flex gap-4 relative">
@@ -82,7 +75,7 @@
         class="relative flex items-center justify-center"
         :class="[
           index !== 0 ? 'before-line' : '',
-          index !== timelineData.length - 1 ? 'after-line' : '',
+          index !== timelineData.length - 1 ? 'after-line' : ''
         ]"
       >
         <div class="w-2 h-2 bg-gray-700 rounded-full z-10"></div>
@@ -111,20 +104,38 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { MdCatalog, MdPreview } from "md-editor-v3";
-import "md-editor-v3/lib/style.css";
-import "md-editor-v3/lib/preview.css";
-import { onMounted, onUnmounted, ref } from "vue";
 
-const editorId = "preview-only-notes";
-const scrollElement = document.documentElement;
+<script setup lang="ts">
+import { MdCatalog, MdPreview } from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
+import 'md-editor-v3/lib/preview.css'
+import { onMounted, onUnmounted, ref } from 'vue'
+
+const editorId = 'preview-only-notes'
+const scrollElement = document.documentElement
 const content = ref(`
 ## # 生命的旷野
-
+- 你好
 ==落||日西沉||，炊烟袅袅。==
 
 @linkCard[标题][https://q2.itc.cn/q_70/images03/20241013/6fe9a539a055473b8677c734558b462f.jpeg][这是一个描述](https://icon-sets.iconify.design/?query=link&search-page=1)
+
+:::collapse title=点我展开内容
+==春风若有怜花意，可否许我再少年？==
+
+> *“人间浮躁，尘世喧嚣。不曾想过去桃花源与世界隔绝的人间圣地，只想拥有一片属于自己的宁境。 不曾去过森林，却想在森林中聆听大自然的声音，享受这一片宁静。”*
+
+- 列表
+:::
+
+:::carousel
+https://ss3.baidu.com/9fo3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/18d8bc3eb13533fae0a4ef61acd3fd1f41345b6a.jpg
+https://pic4.zhimg.com/v2-57ed22547faf8635adb245964aee8a0b_r.jpg
+https://www.2008php.com/2013_Website_appreciate/2013-03-17/20130317005445.jpg
+https://p7.itc.cn/q_70/images03/20240101/469a5b2a96a346318d190fd0acfe20c3.jpeg
+https://pic1.zhimg.com/80/v2-2464893e23ed8c3d2760b446015ef8e8_r.jpg
+:::
+
 
 村里的环境==恬静==而舒适，深秋的风凉爽而不凛冽。@Pingan[此间别处](https://baidu.com)铁栅栏里是一条不长不短的小径，通往一座矮矮的房子。小径边上有一座小假山和一个小水塘，尚且算作修饰。在小屋的后面可以隐约看见远远的旷野。这是一片广阔之境。
 
@@ -238,144 +249,141 @@ error
 6. 凌晨7-9点，小肠大量吸收营养的时段，应吃早餐。疗病者最好早吃，在6点半前，养生者在7点半前，不吃早餐者应改变习惯，即使拖到9、10点吃都比不吃好。
 7. 半夜至凌晨4点为脊椎造血时段，必须熟睡，不宜熬夜。
 
-`);
-const marginTop = ref(220);
-const titles = ref([]);
-const scrollPercentage = ref<Number>(0);
-const componentRef = ref(null); // 组件根元素的引用
+`)
+const marginTop = ref(220)
+const titles = ref([])
+const scrollPercentage = ref<Number>(0)
+const componentRef = ref(null) // 组件根元素的引用
 const timelineData = ref([
   {
-    time: "02/05",
-    title: "镜头与代码的交响：打造个人线上画廊与假期随笔",
-    tag: "心情：开心 / 天气：阴 / 手记",
+    time: '02/05',
+    title: '镜头与代码的交响：打造个人线上画廊与假期随笔',
+    tag: '心情：开心 / 天气：阴 / 手记'
   },
   {
-    time: "02/05",
-    title: "镜头与代码的交响：打造个人线上画廊与假期随笔",
-    tag: "心情：开心 / 天气：阴 / 手记",
+    time: '02/05',
+    title: '镜头与代码的交响：打造个人线上画廊与假期随笔',
+    tag: '心情：开心 / 天气：阴 / 手记'
   },
   {
-    time: "02/05",
-    title: "镜头与代码的交响：打造个人线上画廊与假期随笔",
-    tag: "心情：开心 / 天气：阴 / 手记",
-  },
-]);
+    time: '02/05',
+    title: '镜头与代码的交响：打造个人线上画廊与假期随笔',
+    tag: '心情：开心 / 天气：阴 / 手记'
+  }
+])
 const commentData = ref([
   {
     id: 1,
-    nickName: "张杰",
-    content: "祝你们百年好合",
-    webSite: "https://baidu.com",
+    nickName: '张杰',
+    content: '祝你们百年好合',
+    webSite: 'https://baidu.com',
     imgUrl:
-      "https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500",
-    time: "大约2小时前",
+      'https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500',
+    time: '大约2小时前',
     children: [
       {
         id: 11,
-        nickName: "灵动",
-        replyName: "张杰",
-        content: "我回复一下",
-        webSite: "",
+        nickName: '灵动',
+        replyName: '张杰',
+        content: '我回复一下',
+        webSite: '',
         imgUrl:
-          "https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500",
-        time: "大约2小时前",
-      },
-    ],
+          'https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500',
+        time: '大约2小时前'
+      }
+    ]
   },
   {
     id: 2,
-    nickName: "热心市民",
-    content: "在爱的旅途中 坚守初心 一路相伴同行 祝福你们爱情长长久久",
-    webSite: "",
+    nickName: '热心市民',
+    content: '在爱的旅途中 坚守初心 一路相伴同行 祝福你们爱情长长久久',
+    webSite: '',
     imgUrl:
-      "https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500",
-    time: "大约3小时前",
-    children: [],
+      'https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500',
+    time: '大约3小时前',
+    children: []
   },
   {
     id: 3,
-    nickName: "小石头",
-    content: "你们的爱如阳光遍洒 使生活处处充满温暖 祝福长长久久",
-    webSite: "",
+    nickName: '小石头',
+    content: '你们的爱如阳光遍洒 使生活处处充满温暖 祝福长长久久',
+    webSite: '',
     imgUrl:
-      "https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500",
-    time: "大约8小时前",
-    children: [],
+      'https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500',
+    time: '大约8小时前',
+    children: []
   },
   {
     id: 4,
-    nickName: "消炎",
-    content: "愿君与卿情长久 朝朝暮暮共欢颜",
-    webSite: "",
+    nickName: '消炎',
+    content: '愿君与卿情长久 朝朝暮暮共欢颜',
+    webSite: '',
     imgUrl:
-      "https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500",
-    time: "大约1天前",
-    children: [],
-  },
-]);
+      'https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500',
+    time: '大约1天前',
+    children: []
+  }
+])
 
-let lastScrollTop = 0;
-let sidebarTop = false;
-let sidebarOffset = false;
+let lastScrollTop = 0
+let sidebarTop = false
+let sidebarOffset = false
 const handleScroll = () => {
   const currentScrollTop =
-    window.pageYOffset ||
-    document.documentElement.scrollTop ||
-    document.body.scrollTop ||
-    0;
+    window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0
   if (currentScrollTop > lastScrollTop) {
     // 获取页面滚动的位置与页面总高度
-    const scrollY = window.scrollY || window.pageYOffset;
+    const scrollY = window.scrollY || window.pageYOffset
 
     if (scrollY >= 220 && !sidebarTop) {
-      marginTop.value = 0;
-      sidebarTop = true;
-      sidebarOffset = false;
+      marginTop.value = 0
+      sidebarTop = true
+      sidebarOffset = false
     }
   } else {
-    const scrollY = window.scrollY || window.pageYOffset;
+    const scrollY = window.scrollY || window.pageYOffset
     if (scrollY <= 220 && !sidebarOffset) {
-      marginTop.value = 220;
-      sidebarTop = false;
-      sidebarOffset = true;
+      marginTop.value = 220
+      sidebarTop = false
+      sidebarOffset = true
     }
   }
-  lastScrollTop = currentScrollTop;
-};
+  lastScrollTop = currentScrollTop
+}
 const onGetCatalog = (list: any) => {
-  titles.value = list;
-};
+  titles.value = list
+}
 const onActive = (heading: any, e: any) => {
   setTimeout(() => {
     e.scrollIntoView({
-      behavior: "smooth", // 平滑滚动
-      block: "nearest", // 对齐到顶部 (可选: start/center/end/nearest)
-    });
-  }, 100);
-};
+      behavior: 'smooth', // 平滑滚动
+      block: 'nearest' // 对齐到顶部 (可选: start/center/end/nearest)
+    })
+  }, 100)
+}
 
 const calculateScrollPercentage = () => {
-  if (!componentRef.value) return;
+  if (!componentRef.value) return
 
-  const component = componentRef.value;
-  const componentRect = component.getBoundingClientRect();
-  const windowHeight = window.innerHeight;
-  const componentHeight = componentRect.height;
+  const component = componentRef.value
+  const componentRect = component.getBoundingClientRect()
+  const windowHeight = window.innerHeight
+  const componentHeight = componentRect.height
 
   // 计算组件在视口中的可见部分
-  const visibleStart = Math.max(0, -componentRect.top);
-  const visibleEnd = Math.min(componentHeight, windowHeight - componentRect.top);
-  const visibleHeight = Math.max(0, visibleEnd - visibleStart);
+  const visibleStart = Math.max(0, -componentRect.top)
+  const visibleEnd = Math.min(componentHeight, windowHeight - componentRect.top)
+  const visibleHeight = Math.max(0, visibleEnd - visibleStart)
 
   // 计算滚动百分比 (0% = 组件顶部刚进入视口，100% = 组件底部刚离开视口)
   scrollPercentage.value = Math.min(
     100,
     Math.round((visibleStart / (componentHeight - visibleHeight)) * 100)
-  );
-};
+  )
+}
 const submit = (val, id = null, replyName = null) => {
   let imgUrl =
-    "https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500";
+    'https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500'
   const newComment = {
     id: Date.now(), // 使用当前时间戳作为唯一 ID
     nickName: val.nickName,
@@ -383,43 +391,43 @@ const submit = (val, id = null, replyName = null) => {
     content: val.content,
     webSite: val.webSite,
     imgUrl: imgUrl,
-    time: "大约8小时前",
-    children: [],
-  };
+    time: '大约8小时前',
+    children: []
+  }
 
   if (id) {
-    let data = findAnyCommentById(id);
+    let data = findAnyCommentById(id)
     // 更新评论的 children 数据
     if (data) {
-      data.children.push(newComment);
+      data.children.push(newComment)
     }
   } else {
     // 更新主评论数据
-    commentData.value.push(newComment);
+    commentData.value.push(newComment)
   }
-};
+}
 
 const findAnyCommentById = (id) => {
   for (const comment of commentData.value) {
     if (comment.id === id) {
-      return comment;
+      return comment
     }
-    const child = comment.children.find((child) => child.id === id);
+    const child = comment.children.find((child) => child.id === id)
     if (child) {
-      return child;
+      return child
     }
   }
-  return null;
-};
+  return null
+}
 
 onMounted(() => {
-  window.addEventListener("scroll", handleScroll);
-  window.addEventListener("scroll", calculateScrollPercentage);
-});
+  window.addEventListener('scroll', handleScroll)
+  window.addEventListener('scroll', calculateScrollPercentage)
+})
 onUnmounted(() => {
-  window.removeEventListener("scroll", handleScroll);
-  window.removeEventListener("scroll", calculateScrollPercentage);
-});
+  window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('scroll', calculateScrollPercentage)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -444,11 +452,7 @@ onUnmounted(() => {
   height: 1rem;
 }
 .gradient-bg {
-  background: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 0) 10%,
-    rgba(255, 105, 180, 0.2) 100%
-  );
+  background: linear-gradient(to top, rgba(255, 255, 255, 0) 10%, rgba(255, 105, 180, 0.2) 100%);
   width: 100%;
   position: absolute;
   height: 600px;
@@ -466,7 +470,7 @@ onUnmounted(() => {
 }
 .before-line::before,
 .after-line::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 1px;
   background-color: #d1d5db; /* gray-300 */
@@ -489,7 +493,7 @@ onUnmounted(() => {
 }
 
 .title-hover::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   bottom: 5px; /* 贴紧文字 */
