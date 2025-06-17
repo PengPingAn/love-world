@@ -67,7 +67,7 @@ import { ref, watch } from "vue";
 import { useUserStore } from "@/stores/pinia";
 
 const userStore = useUserStore();
-console.log(userStore);
+
 const formValue = ref({
   nickName: "",
   email: "",

@@ -36,7 +36,14 @@ const routes = [
         meta: { title: TITLE_NAME + '留言' },
         component: () => import('@/views/leave-message/index.vue'),
         props: true,  // 将路由参数作为 props 传递给组件
-    }
+    },
+    {
+        path: "/things",
+        name: "things",
+        meta: { title: TITLE_NAME + '动态' },
+        component: () => import('@/views/things/index.vue'),
+        props: true,  // 将路由参数作为 props 传递给组件
+    },
 ]
 
 export default routes

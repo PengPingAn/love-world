@@ -177,13 +177,12 @@ https://pic1.zhimg.com/80/v2-2464893e23ed8c3d2760b446015ef8e8_r.jpg
 
 ## # ||==生命的旷野==||
 
-~~ warning
-export const PlayerScreen: NavigationControllerView = () => {
-  return <SheetScreen onClose={() => navigation.dismiss()}></SheetScreen>
-}
-
-PlayerScreen.transparent = true
-~~
+:::video src=https://player.bilibili.com/player.html?aid=56850347&cid=99299213&page=1&autoplay=false
+描述
+::: 
+:::video src=https://www.youtube.com/embed/dQw4w9WgXcQ
+这是一个油管视频
+::: 
 
 @linkCard[标题][https://q2.itc.cn/q_70/images03/20241013/6fe9a539a055473b8677c734558b462f.jpeg][这是一个描述](https://baidu.com)
 
@@ -275,9 +274,9 @@ const gridItems = [
   },
   {
     icon: 'lucide:sparkles',
-    title: '标题四',
-    description: '内容四',
-    url: '/photoAlbum'
+    title: '计划事件',
+    description: '约定一起完成的事情',
+    url: '/things'
   }
 ]
 const people = [

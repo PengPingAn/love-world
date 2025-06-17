@@ -330,7 +330,7 @@ function reset() {
 /* The Main Switch */
 
 .card_content {
-  padding: 1rem;
+  padding: .5rem 1rem 1rem 1rem;
 }
 
 /* The switch - the box around the slider */

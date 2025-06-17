@@ -54,11 +54,23 @@ app.directive('scroll-animate', scrollAnimation)
 window.$message = message
 app.mount('#app')
 
-initMarkdownCollapse();
+let disposeHoverCard: (() => void) | null = null;
+let disposeCarousel: (() => void) | null = null;
+let disposeCollapse: (() => void) | null = null;
 router.afterEach(() => {
   nextTick(() => {
-    initMarkdownCarousel()
-    initHoverCard()
+    if (disposeCarousel) {
+      disposeCarousel(); // 卸载上一次绑定
+    }
+    disposeCarousel = initMarkdownCarousel(); 
+    if (disposeHoverCard) {
+      disposeHoverCard(); // 卸载上一次绑定
+    }
+    disposeHoverCard = initHoverCard(); 
+    if (disposeCollapse) {
+      disposeCollapse(); // 卸载上一次绑定
+    }
+    disposeCollapse = initMarkdownCollapse(); 
   })
 })
 

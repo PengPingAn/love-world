@@ -137,10 +137,22 @@ export function initMarkdownCarousel(
 
         if (!containerEl || !btnPrev || !btnNext) return;
 
+        const shouldAutoplay = wrapper.getAttribute('data-autoplay') !== 'false';
+
         const totalItems = items.length;
         let autoplayTimer: ReturnType<typeof setInterval> | null = null;
         let autoplayDirection: 1 | -1 = 1;
         let interactionTimeout: ReturnType<typeof setTimeout> | null = null;
+
+        if (totalItems === 1) {
+            // 设置容器内容居中
+            containerEl.style.justifyContent = 'center';
+
+            // 可选：隐藏左右按钮和指示器点
+            btnPrev.style.display = 'none';
+            btnNext.style.display = 'none';
+            // dots.forEach(dot => dot.style.display = 'none');
+        }
 
         const getItemFullWidth = () => {
             const style = getComputedStyle(items[0]);
@@ -218,6 +230,7 @@ export function initMarkdownCarousel(
 
         const startAutoplay = () => {
             if (autoplayTimer) return;
+            if (!shouldAutoplay) return;
             autoplayTimer = setInterval(() => {
                 const index = getCurrentIndex();
                 let nextIndex = index + autoplayDirection;
@@ -243,7 +256,9 @@ export function initMarkdownCarousel(
             if (interactionTimeout) clearTimeout(interactionTimeout);
             stopAutoplay();
             interactionTimeout = setTimeout(() => {
-                startAutoplay();
+                if (shouldAutoplay) {
+                    startAutoplay();
+                }
             }, 4000);
         };
 
@@ -283,5 +298,5 @@ export function initMarkdownCarousel(
     };
 }
 
-
+//    justify-content: center;
 

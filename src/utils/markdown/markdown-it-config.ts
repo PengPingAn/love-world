@@ -114,6 +114,75 @@ export const customPlugin = (md) => {
         return true;
     });
 
+    //视频插件
+    md.block.ruler.before('fence', 'video', (state, startLine, endLine, silent) => {
+        const start = state.bMarks[startLine] + state.tShift[startLine];
+        const max = state.eMarks[startLine];
+        const line = state.src.slice(start, max).trim();
+
+        if (!line.startsWith(':::video')) return false;
+
+        // 解析参数
+        const attrRegex = /(\w+)=([^\s]+)/g;
+        const attrs = {};
+        let match;
+        while ((match = attrRegex.exec(line)) !== null) {
+            attrs[match[1]] = match[2];
+        }
+
+        if (!attrs.src) return false;
+
+        let nextLine = startLine + 1;
+        const lines = [];
+        while (nextLine < endLine) {
+            const pos = state.bMarks[nextLine] + state.tShift[nextLine];
+            const maxPos = state.eMarks[nextLine];
+            const text = state.src.slice(pos, maxPos).trim();
+
+            if (text === ':::') break;
+
+            lines.push(text);
+            nextLine++;
+        }
+
+        if (silent) return true;
+
+        state.line = nextLine + 1;
+
+        const description = lines.join('\n').trim();
+
+        const isExternal = /^https?:\/\//.test(attrs.src) &&
+            /(youtube\.com|bilibili\.com|vimeo\.com)/.test(attrs.src);
+
+        const player = isExternal
+            ? `<iframe
+               src="${attrs.src}"
+               class="md-video-iframe"
+               frameborder="0"
+               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+               allowfullscreen
+             ></iframe>`
+            : `<video
+               src="${attrs.src}"
+               ${attrs.poster ? `poster="${attrs.poster}"` : ''}
+               controls
+               preload="metadata"
+               class="md-video"
+             ></video>`;
+
+        const html = `
+          <div class="md-video-wrapper">
+            ${player}
+            ${description ? `<div class="md-video-description">—— ${md.utils.escapeHtml(description)} ——</div>` : ''}
+          </div>
+        `;
+
+        const token = state.push('html_block', '', 0);
+        token.content = html;
+
+        return true;
+    });
+
     //语法高亮
     md.inline.ruler.before('text', 'highlight', (state) => {
         const start = state.pos;
@@ -232,6 +301,51 @@ export const customPlugin = (md) => {
         });
     });
 
+    //轮播图
+    md.block.ruler.before('fence', 'carousel', (state, startLine, endLine, silent) => {
+        const startPos = state.bMarks[startLine] + state.tShift[startLine];
+        const maxPos = state.eMarks[startLine];
+
+        if (!state.src.slice(startPos, maxPos).trim().startsWith(':::carousel')) return false;
+        if (silent) return true;
+
+        let nextLine = startLine + 1;
+        const content: string[] = [];
+
+        while (nextLine < endLine) {
+            const lineStart = state.bMarks[nextLine] + state.tShift[nextLine];
+            const lineEnd = state.eMarks[nextLine];
+            const lineText = state.src.slice(lineStart, lineEnd).trim();
+
+            if (lineText === ':::') break;
+
+            content.push(lineText);
+            nextLine++;
+        }
+
+        // ✅ 在这里记录图片数量
+        state.env.carouselImageCount = content.length;
+
+        const tokenOpen = state.push('carousel_open', 'div', 1);
+        tokenOpen.attrs = [['class', 'container']];
+        tokenOpen.map = [startLine, nextLine];
+
+        content.forEach(src => {
+            const itemOpen = state.push('container_item_open', 'div', 1);
+            itemOpen.attrs = [['class', 'container-item']];
+
+            const imgToken = state.push('html_inline', '', 0);
+            imgToken.content = `<img src="${src}" alt="" />`;
+
+            const itemClose = state.push('container_item_close', 'div', -1);
+        });
+
+        const tokenClose = state.push('carousel_close', 'div', -1);
+
+        state.line = nextLine + 1;
+        return true;
+    });
+
     // 隐藏渲染
     md.renderer.rules.tooltip = (tokens, idx) => {
         const token = tokens[idx];
@@ -305,51 +419,7 @@ export const customPlugin = (md) => {
     };
     // console.log('Updated inline rulers:', md.block.ruler.__rules__.map(r => r.name));
 
-    md.block.ruler.before('fence', 'carousel', (state, startLine, endLine, silent) => {
-        const startPos = state.bMarks[startLine] + state.tShift[startLine];
-        const maxPos = state.eMarks[startLine];
-
-        if (!state.src.slice(startPos, maxPos).trim().startsWith(':::carousel')) return false;
-        if (silent) return true;
-
-        let nextLine = startLine + 1;
-        const content: string[] = [];
-
-        while (nextLine < endLine) {
-            const lineStart = state.bMarks[nextLine] + state.tShift[nextLine];
-            const lineEnd = state.eMarks[nextLine];
-            const lineText = state.src.slice(lineStart, lineEnd).trim();
-
-            if (lineText === ':::') break;
-
-            content.push(lineText);
-            nextLine++;
-        }
-
-        // ✅ 在这里记录图片数量
-        state.env.carouselImageCount = content.length;
-
-        const tokenOpen = state.push('carousel_open', 'div', 1);
-        tokenOpen.attrs = [['class', 'container']];
-        tokenOpen.map = [startLine, nextLine];
-
-        content.forEach(src => {
-            const itemOpen = state.push('container_item_open', 'div', 1);
-            itemOpen.attrs = [['class', 'container-item']];
-
-            const imgToken = state.push('html_inline', '', 0);
-            imgToken.content = `<img src="${src}" alt="" />`;
-
-            const itemClose = state.push('container_item_close', 'div', -1);
-        });
-
-        const tokenClose = state.push('carousel_close', 'div', -1);
-
-        state.line = nextLine + 1;
-        return true;
-    });
-
-
+    //轮播图渲染
     md.renderer.rules.carousel_open = (tokens, idx) => {
         const token = tokens[idx];
         const classAttr = token.attrs?.find(attr => attr[0] === 'class');
@@ -367,7 +437,6 @@ export const customPlugin = (md) => {
 
         return `</div>${dotsHtml}<div class="container-btn next">${svgRight}</div></div>\n`;
     };
-
     md.renderer.rules.container_item_open = (tokens, idx) => {
         const token = tokens[idx];
         const classAttr = token.attrs?.find(attr => attr[0] === 'class');
