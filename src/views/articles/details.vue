@@ -1,5 +1,8 @@
 <template>
-  <div class="m-[5rem] max-w-[1100px] m-auto" style="font-family: 'Noto Serif SC', serif">
+  <div
+    class="m-[5rem] max-w-[1100px] m-auto text-[var(--font-color)]"
+    style="font-family: 'Noto Serif SC', serif"
+  >
     <div class="text-center mb-[4rem]">
       <h1 class="text-4xl font-bold">文章标题</h1>
     </div>
@@ -12,6 +15,7 @@
             :modelValue="content"
             style="background: transparent; min-height: 90vh; font-family: 'Noto Serif SC', serif"
             @onGetCatalog="onGetCatalog"
+            :theme="userStore.$state.editorTheme"
           />
         </div>
         <div class="m-auto max-w-[1000px] pt-[5rem]">
@@ -104,13 +108,14 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
 import { MdCatalog, MdPreview } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import 'md-editor-v3/lib/preview.css'
 import { onMounted, onUnmounted, ref } from 'vue'
+import { useEditorThemeStore } from '@/stores/pinia'
 
+const userStore = useEditorThemeStore()
 const editorId = 'preview-only-notes'
 const scrollElement = document.documentElement
 const content = ref(`
@@ -135,6 +140,20 @@ https://www.2008php.com/2013_Website_appreciate/2013-03-17/20130317005445.jpg
 https://p7.itc.cn/q_70/images03/20240101/469a5b2a96a346318d190fd0acfe20c3.jpeg
 https://pic1.zhimg.com/80/v2-2464893e23ed8c3d2760b446015ef8e8_r.jpg
 :::
+
+:::card url=https://www.disneyplus.com/en-jp/browse/entity-b29d5852-c94c-4d05-beb9-bfd2f227fd12 title="血谜拼图（나인 퍼즐）" image=https://image.tmdb.org/t/p/w500/xWH7Tyg5FXh90hN3IPUeBYpprqk.jpg rating=7
+异罗是叔叔死亡的唯一目击者，她为了查明案件真相而成为犯罪侧写师。重案组刑警瀚泉执着地怀疑异罗就是嫌犯。伴随着时隔十年送达的拼图，命案再度发生。异罗及瀚泉能阻止这起拼图连环杀人案吗？
+:::
+
+> [!NOTE]
+> Highlights information that users should take into account, even when skimming.
+
+> [!WARNING]
+> Critical content demanding immediate user attention due to potential risks.
+
+> [!Danger]
+> Highlights information that users should take into account, even when skimming.
+
 
 村里的环境==恬静==而舒适，深秋的风凉爽而不凛冽。@Pingan[此间别处](https://baidu.com)铁栅栏里是一条不长不短的小径，通往一座矮矮的房子。小径边上有一座小假山和一个小水塘，尚且算作修饰。在小屋的后面可以隐约看见远远的旷野。这是一片广阔之境。
 

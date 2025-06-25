@@ -7,7 +7,7 @@
   <div class="stack" @click="jumpPage(url)">
     <div class="card">
       <div class="image">
-        <div class="text-title">
+        <div class="text-title text-[var(--font-color)]">
           {{ title }}
         </div>
         <div class="text-desc">
@@ -20,20 +20,20 @@
 
 <script setup lang="ts">
 interface Props {
-  title: string;
-  description?: string;
-  url: string;
+  title: string
+  description?: string
+  url: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   sparklesCount: 10,
-  colors: () => ({ first: "#9E7AFF", second: "#FE8BBB" }),
-});
+  colors: () => ({ first: '#9E7AFF', second: '#FE8BBB' })
+})
 
-const emit = defineEmits(["jumpPage"]);
+const emit = defineEmits(['jumpPage'])
 const jumpPage = (item) => {
-  emit("jumpPage", item);
-};
+  emit('jumpPage', item)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -61,21 +61,21 @@ img {
 
 .card {
   aspect-ratio: 3 / 2;
-  border: 4px solid;
-  background-color: #fff;
+  border: 2px solid var(--paper-card-border-color);
+  background-color: var(--paper-card-bg-color);
   position: relative;
   transition: 0.15s ease;
   cursor: pointer;
   padding: 5% 5% 15% 5%;
   &:before,
   &:after {
-    content: "";
+    content: '';
     display: block;
     position: absolute;
     height: 100%;
     width: 100%;
-    border: 4px solid;
-    background-color: #fff;
+    border: 2px solid var(--paper-card-border-color);
+    background-color: var(--paper-card-bg-color);
     transform-origin: center center;
     z-index: -1;
     transition: 0.15s ease;
@@ -93,8 +93,8 @@ img {
 }
 .image {
   width: 100%;
-  border: 4px solid;
-  background-color: #eee;
+  border: 2px solid var(--paper-card-border-color);
+  background-color: var(--paper-card-bg-color);
   aspect-ratio: 1 / 1;
   position: relative;
   display: flex;

@@ -22,6 +22,20 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src') // 关键配置
     }
-  }
+  },
+  server: {
+    cors: true, // 默认启用并允许任何源
+    open: false, // 在服务器启动时自动在浏览器中打开应用程序
+    port: 8886,
+    //反向代理配置，注意rewrite写法，开始没看文档在这里踩了坑
+    proxy: {
+      '^/api': {
+        // target: 'http://localhost:1688',   //代理接口
+        target: 'http://localhost:9527',
+        changeOrigin: true,
+        //rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  },
 
 })

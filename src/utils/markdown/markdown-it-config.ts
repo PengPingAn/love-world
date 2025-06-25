@@ -4,6 +4,10 @@ import errorIcon from "@/assets/svg/error.svg";
 import warningIcon from "@/assets/svg/warning.svg";
 import svgLeft from '@/assets/svg/carousel-left.svg?raw'
 import svgRight from '@/assets/svg/carousel-right.svg?raw'
+import svgAlWarning from '@/assets/svg/alerts-warning.svg?raw'
+import svgAlError from '@/assets/svg/alerts-error.svg?raw'
+import svgAlNote from '@/assets/svg/alerts-note.svg?raw'
+import svgDownLine from '@/assets/svg/down-line.svg?raw'
 
 // ----------------------------
 // 自定义语法插件
@@ -104,7 +108,7 @@ export const customPlugin = (md) => {
         const token = state.push('html_block', '', 0);
         token.content = `
           <div class="md-collapse">
-            <div class="md-collapse-title"><div class='md-collapse-icon'></div>${title}</div>
+            <div class="md-collapse-title"><div class='md-collapse-icon'>${svgDownLine}</div>${title}</div>
             <div class="md-collapse-body">
               <div class="md-collapse-inner open">${renderedContent}</div>
             </div>
@@ -176,6 +180,130 @@ export const customPlugin = (md) => {
             ${description ? `<div class="md-video-description">—— ${md.utils.escapeHtml(description)} ——</div>` : ''}
           </div>
         `;
+
+        const token = state.push('html_block', '', 0);
+        token.content = html;
+
+        return true;
+    });
+
+    //电影/电视链接卡片
+    md.block.ruler.before('fence', 'card', (state, startLine, endLine, silent) => {
+        const start = state.bMarks[startLine] + state.tShift[startLine];
+        const max = state.eMarks[startLine];
+        const line = state.src.slice(start, max).trim();
+
+        if (!line.startsWith(':::card')) return false;
+
+        const attrRegex = /(\w+)=("[^"]+"|'[^']+'|[^\s]+)/g;
+        const attrs: Record<string, string> = {};
+        let match;
+        while ((match = attrRegex.exec(line)) !== null) {
+            let value = match[2];
+            if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+                value = value.slice(1, -1);
+            }
+            attrs[match[1]] = value;
+        }
+
+        if (!attrs.url) return false;
+
+        let nextLine = startLine + 1;
+        const lines: string[] = [];
+
+        while (nextLine < endLine) {
+            const pos = state.bMarks[nextLine] + state.tShift[nextLine];
+            const maxPos = state.eMarks[nextLine];
+            const text = state.src.slice(pos, maxPos).trim();
+            if (text === ':::') break;
+            lines.push(text);
+            nextLine++;
+        }
+
+        if (silent) return true;
+
+        state.line = nextLine + 1;
+
+        const url = md.utils.escapeHtml(attrs.url);
+        const title = md.utils.escapeHtml(attrs.title || '');
+        const image = md.utils.escapeHtml(attrs.image || '');
+        const desc = md.utils.escapeHtml(lines.join('\n').trim());
+
+        // 读取评分，限制1~10
+        let ratingNum = 0;
+        if (attrs.rating) {
+            const r = Number(attrs.rating);
+            if (!isNaN(r) && r >= 1 && r <= 10) {
+                ratingNum = r;
+            }
+        }
+
+        const html = `
+          <a class="m-card" href="${url}" target="_blank" rel="noopener noreferrer">
+            ${image ? `<div class="m-card-cover" style="background-image: url('${image}')"></div>` : ''}
+            <div class="m-card-content">
+              ${title ? `<div class="m-card-title-row"><div class="m-card-title">${title}</div></div>` : ''}
+              ${desc ? `<div class="m-card-desc">${desc}</div>` : ''}
+            </div>
+            <div class="m-card-overlay"></div>
+          </a>
+        `;
+
+        const token = state.push('html_block', '', 0);
+        token.content = html;
+
+        return true;
+    });
+
+    //NOTE扩展
+    md.block.ruler.before('blockquote', 'admonition', (state, startLine, endLine, silent) => {
+        const start = state.bMarks[startLine] + state.tShift[startLine];
+        const max = state.eMarks[startLine];
+        const line = state.src.slice(start, max).trim();
+
+        const match = line.match(/^> \[!(\w+)]\s*$/);
+        if (!match) return false;
+
+        const type = match[1].toLowerCase();
+        const titleMap: Record<string, string> = {
+            note: 'Note',
+            warning: 'Warning',
+            danger: 'Danger',
+        };
+        const iconMap: Record<string, string> = {
+            note: svgAlNote,
+            warning: svgAlWarning,
+            danger: svgAlError,
+        };
+
+        let nextLine = startLine + 1;
+        const contentLines: string[] = [];
+
+        while (nextLine < endLine) {
+            const pos = state.bMarks[nextLine] + state.tShift[nextLine];
+            const maxPos = state.eMarks[nextLine];
+            const text = state.src.slice(pos, maxPos).trim();
+            if (!text.startsWith('>')) break;
+            contentLines.push(text.replace(/^>\s?/, ''));
+            nextLine++;
+        }
+
+        if (silent) return true;
+        state.line = nextLine;
+
+        const title = titleMap[type] || 'Note';
+        const icon = iconMap[type] || 'ℹ️';
+        const body = md.utils.escapeHtml(contentLines.join('\n'));
+
+        const html = `
+          <div class="m-admonition alerts-${type}">
+            <div class="m-admonition-title">
+              <span class="m-admonition-icon">${icon}</span>
+              <span class="m-admonition-label">${title}</span>
+            </div>
+            <div class="m-admonition-body">${md.renderInline(body)}</div>
+          </div>
+          `;
 
         const token = state.push('html_block', '', 0);
         token.content = html;

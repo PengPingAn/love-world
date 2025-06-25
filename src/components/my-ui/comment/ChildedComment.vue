@@ -1,12 +1,9 @@
 <template>
   <div>
     <template v-for="(item, index) in data" :key="index">
-      <div class="mt-[1rem] mb-[1rem] flex gap-4">
+      <div class="mt-[1rem] mb-[1rem] flex gap-4 text-[var(--font-color)]">
         <div class="flex gap-4">
-          <div
-            :style="{ cursor: item.webSite ? 'pointer' : 'default' }"
-            style="height: 0"
-          >
+          <div :style="{ cursor: item.webSite ? 'pointer' : 'default' }" style="height: 0">
             <div v-if="item.imgUrl" class="w-[2.5rem] h-[2.5rem]">
               <img :src="item.imgUrl" class="rounded-full" />
             </div>
@@ -34,14 +31,14 @@
               <span class="text-[#2397fd]">@{{ item.replyName }}</span>
               {{ item.content }}
               <div class="hover-content" @click="btn_show(item.id)" v-if="isReply">
-                <Icon icon="mage:message-conversation"></Icon>
+                <Icon icon="mage:message-conversation" style="color: #000"></Icon>
               </div>
             </div>
           </div>
           <div
             class="reply-form-container"
             :style="{
-              gridTemplateRows: activeReplyId === item.id ? '1fr' : '',
+              gridTemplateRows: activeReplyId === item.id ? '1fr' : ''
             }"
           >
             <div>
@@ -55,29 +52,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { Icon } from "@iconify/vue";
+import { ref } from 'vue'
+import { Icon } from '@iconify/vue'
 
 const props = defineProps<{
-  data: [];
-  isReply: boolean;
-}>();
+  data: []
+  isReply: boolean
+}>()
 
-const activeReplyId = ref(null);
-const replyContent = ref("");
+const activeReplyId = ref(null)
+const replyContent = ref('')
 
 const btn_show = (id: any) => {
   if (activeReplyId.value === id) {
-    activeReplyId.value = null;
+    activeReplyId.value = null
   } else {
-    activeReplyId.value = id;
-    replyContent.value = "";
+    activeReplyId.value = id
+    replyContent.value = ''
   }
-};
-const emit = defineEmits(["submit"]);
+}
+const emit = defineEmits(['submit'])
 const submit = (val) => {
-  emit("submit", val, activeReplyId.value);
-};
+  emit('submit', val, activeReplyId.value)
+}
 </script>
 
 <style src="./style.scss"></style>

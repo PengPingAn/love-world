@@ -1,7 +1,7 @@
 <template>
   <!-- From Uiverse.io by Praashoo7 -->
   <div
-    class="main hover:-translate-y-2 duration-300"
+    class="main hover:-translate-y-2 duration-300 text-[var(--font-color)]"
     @mousemove="handleMove"
     @mouseleave="reset"
     :style="style"
@@ -111,7 +111,7 @@ function reset() {
   transition: transform 0.1s ease-out;
   &-bg {
     box-shadow: rgba(99, 99, 99, 0.3) 0px 2px 8px 0px;
-    background-color: #ffffff;
+    background-color: var(--paper-card-bg-color);
   }
 }
 
@@ -330,7 +330,7 @@ function reset() {
 /* The Main Switch */
 
 .card_content {
-  padding: .5rem 1rem 1rem 1rem;
+  padding: 0.5rem 1rem 1rem 1rem;
 }
 
 /* The switch - the box around the slider */

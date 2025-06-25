@@ -52,8 +52,11 @@
         <div class="flex items-center cta gap-1">
           <span>{{ formValue.content.length }}/500</span>
           <button class="send-button flex items-center gap-1" @click="btn_submit">
-            <Icon icon="majesticons:airplane-flight-2-line"></Icon>
-            <span style="font-size: 14px; color: black">送信</span>
+            <Icon
+              icon="majesticons:airplane-flight-2-line"
+              class="text-[var(--font-color)]"
+            ></Icon>
+            <span style="font-size: 14px; color: var(--font-color)">送信</span>
           </button>
         </div>
       </div>
@@ -128,23 +131,18 @@ const btn_submit = () => {
   position: relative;
   width: 100%;
 }
-
-.input {
-  font-family: "Montserrat", sans-serif;
-  width: 100%;
-  height: 30px;
-  padding: 1rem;
-  box-shadow: 0 0 0 1.5px #a5a7af3d, 0 0 25px -17px #a5a7af3d;
-  border: 0;
-  border-radius: 10px;
-  background-color: #a5a7af3d;
-  outline: none;
-  // color: #a5a7af3d;
-  transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1);
-  cursor: text;
+.group::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 5px;
+  pointer-events: none;
   z-index: 0;
-  font-size: 1rem;
 }
+.group:has(.input:focus)::after {
+  animation: pulse-ring 0.3s ease-out forwards;
+}
+
 .textarea {
   font-family: "Montserrat", sans-serif;
   width: 100%;
@@ -170,8 +168,21 @@ const btn_submit = () => {
   }
 }
 
-.input::placeholder {
-  color: #9e4080;
+.input {
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  height: 30px;
+  padding: 1rem;
+  box-shadow: 0 0 0 1.5px #a5a7af3d, 0 0 25px -17px #a5a7af3d;
+  border: 0;
+  border-radius: 5px;
+  background-color: #a5a7af3d;
+  outline: none;
+  // color: #a5a7af;
+  transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1);
+  cursor: text;
+  z-index: 0;
+  font-size: 1rem;
 }
 
 .input:hover {
@@ -179,13 +190,17 @@ const btn_submit = () => {
 }
 
 .input:focus {
-  box-shadow: 0 0 0 2.5px #a5a7af3d;
-  animation: scaleAnimation 0.2s;
+  box-shadow: 0 0 0 1px #3668f374;
 }
 
-// .input:focus-within {
-//   animation: scaleAnimation 0.2s;
-// }
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 var(--input-border-rgba1);
+  }
+  100% {
+    box-shadow: 0 0 0 7px var(--input-border-rgba2);
+  }
+}
 
 .search-icon {
   position: absolute;
@@ -195,23 +210,6 @@ const btn_submit = () => {
   height: 1rem;
   pointer-events: none;
   z-index: 1;
-}
-
-@keyframes scaleAnimation {
-  0% {
-    transform: scale(1);
-    transform-origin: center center;
-  }
-
-  50% {
-    transform: scale(0.95);
-    transform-origin: center center;
-  }
-
-  100% {
-    transform: scale(1);
-    transform-origin: center center;
-  }
 }
 
 /* From Uiverse.io by alexmaracinaru */

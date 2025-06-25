@@ -4,7 +4,7 @@
     <div class="flex justify-center">
       <!-- From Uiverse.io by Pradeepsaranbishnoi -->
       <div class="container-tab">
-        <div class="tabs">
+        <div class="tabs text-[var(--font-color)]">
           <input type="radio" id="radio-1" name="tabs" />
           <label class="tab" for="radio-1">未完成</label>
           <input type="radio" id="radio-2" name="tabs" checked="" />
@@ -15,7 +15,7 @@
         </div>
       </div>
     </div>
-    <div class="task" draggable="true" v-for="item in thingsData">
+    <div class="task text-[var(--font-color)]" draggable="true" v-for="item in thingsData">
       <!-- From Uiverse.io by LeonKohli -->
       <div class="uv-checkbox-wrapper">
         <input
@@ -34,10 +34,14 @@
         </label>
       </div>
       <div class="md-collapse">
-        <div class="md-collapse-title">
-          <div class="md-collapse-icon"></div>
+        <div class="md-collapse-title text-[var(--font-color)]">
+          <div class="md-collapse-icon" v-html="svgDownLine"></div>
           {{ item.title }}
         </div>
+        <!-- <div class="md-collapse-title">
+          <div class="md-collapse-icon text-[var(--font-color)]" v-html="svgDownLine"></div>
+          <div class="text-[var(--font-color)]">{{ item.title }}</div>
+        </div> -->
         <div class="md-collapse-body">
           <div class="md-collapse-inner open">
             <div
@@ -46,12 +50,7 @@
               v-if="item.imgList && item.imgList.length > 0"
             >
               <div class="container-btn prev">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                   <path
                     fill="none"
                     stroke="#5b5b5b"
@@ -80,12 +79,7 @@
                 <span class="dot" v-for="dot in item.imgList"></span>
               </div>
               <div class="container-btn next">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                   <path
                     fill="none"
                     stroke="#5b5b5b"
@@ -115,31 +109,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue'
+import svgDownLine from '@/assets/svg/down-line.svg?raw'
 
 const thingsData = ref([
   {
     isDone: true,
-    doneTime: "2025年6月13日",
-    title: "一起旅行",
+    doneTime: '2025年6月13日',
+    title: '一起旅行',
     imgList: [
-      "https://pic4.zhimg.com/v2-57ed22547faf8635adb245964aee8a0b_r.jpg",
-      "https://www.2008php.com/2013_Website_appreciate/2013-03-17/20130317005445.jpg",
-    ],
+      'https://pic4.zhimg.com/v2-57ed22547faf8635adb245964aee8a0b_r.jpg',
+      'https://www.2008php.com/2013_Website_appreciate/2013-03-17/20130317005445.jpg'
+    ]
   },
   {
     isDone: true,
-    doneTime: "2023年12月13日",
-    title: "一起做饭",
-    imgList: ["https://pic4.zhimg.com/v2-57ed22547faf8635adb245964aee8a0b_r.jpg"],
+    doneTime: '2023年12月13日',
+    title: '一起做饭',
+    imgList: ['https://pic4.zhimg.com/v2-57ed22547faf8635adb245964aee8a0b_r.jpg']
   },
   {
     isDone: false,
     doneTime: null,
-    title: "一起去海边",
-    imgList: [],
-  },
-]);
+    title: '一起去海边',
+    imgList: []
+  }
+])
 </script>
 
 <style lang="scss" scoped>
@@ -147,7 +142,7 @@ const thingsData = ref([
 .task {
   position: relative;
   color: #2e2e2f;
-  background-color: #fff;
+  background-color: var(--paper-card-bg-color);
   padding: 1rem;
   border-radius: 8px;
   box-shadow: rgba(99, 99, 99, 0.1) 0px 2px 8px 0px;
@@ -170,7 +165,7 @@ const thingsData = ref([
 
   &-icon {
     transition: transform 0.3s ease;
-    background-image: url("@/assets/svg/down-line.svg");
+    // background-image: url('@/assets/svg/down-line.svg');
     display: inline-block;
     width: 24px;
     height: 24px;
@@ -187,9 +182,10 @@ const thingsData = ref([
   display: flex;
   align-items: center;
   gap: 2px;
+  transition: all 0.2s ease;
 
   &:hover {
-    color: #023e6f;
+    color: #0d85e7;
   }
 }
 
@@ -212,7 +208,7 @@ const thingsData = ref([
 
 .md-collapse-inner {
   padding: 10px;
-  background: #fff0f5;
+  background: var(--md-collapse-inner-bg-color);
   animation: bounceIn 0.3s ease;
 }
 
@@ -291,7 +287,8 @@ const thingsData = ref([
 .tabs {
   display: flex;
   position: relative;
-  background-color: #fff;
+  background-color: var(--paper-card-bg-color);
+  border: 1px solid #fff;
   box-shadow: 0 0 1px 0 rgba(24, 94, 224, 0.15), 0 6px 12px 0 rgba(24, 94, 224, 0.15);
   padding: 0.75rem;
   border-radius: 99px;
@@ -307,7 +304,7 @@ const thingsData = ref([
   display: flex;
   justify-content: center;
 }
-.container-tab input[type="radio"] {
+.container-tab input[type='radio'] {
   display: none;
 }
 
@@ -318,13 +315,12 @@ const thingsData = ref([
   height: 30px;
   width: 100px;
   font-size: 0.8rem;
-  color: black;
   font-weight: 500;
   border-radius: 99px;
   cursor: pointer;
   transition: color 0.15s ease-in;
   font-size: 1.2rem;
-  font-family: "Courier New", Courier, monospace;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .notification {
@@ -344,25 +340,25 @@ const thingsData = ref([
   transition: 0.15s ease-in;
 }
 
-.container-tab input[type="radio"]:checked + label {
+.container-tab input[type='radio']:checked + label {
   color: #f661dd;
 }
 
-.container-tab input[type="radio"]:checked + label > .notification {
+.container-tab input[type='radio']:checked + label > .notification {
   background-color: #f661dd;
   color: #fff;
   margin: 0px;
 }
 
-.container-tab input[id="radio-1"]:checked ~ .glider {
+.container-tab input[id='radio-1']:checked ~ .glider {
   transform: translateX(0);
 }
 
-.container-tab input[id="radio-2"]:checked ~ .glider {
+.container-tab input[id='radio-2']:checked ~ .glider {
   transform: translateX(100%);
 }
 
-.container-tab input[id="radio-3"]:checked ~ .glider {
+.container-tab input[id='radio-3']:checked ~ .glider {
   transform: translateX(200%);
 }
 

@@ -1,9 +1,13 @@
 <template>
   <div
-    class="bg-[#faf8f8fc] p-4 fixed w-full z-[999] top-0 backdrop-blur-sm flex items-center"
+    class="bg-[var(--background-head-color)] p-4 fixed w-full z-[999] top-0 backdrop-blur-sm flex items-center"
   >
     <div>
-      <button v-if="showBackButton" @click="handleGoBack" class="flex items-center">
+      <button
+        v-if="showBackButton"
+        @click="handleGoBack"
+        class="flex items-center text-[var(--font-color)]"
+      >
         <Icon class="text-[1.6rem]" icon="material-symbols:arrow-left-alt-rounded"></Icon>
         返回
       </button>

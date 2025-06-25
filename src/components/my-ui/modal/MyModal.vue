@@ -21,7 +21,7 @@
     <!-- 模态框内容 -->
     <div
       v-show="showModal"
-      class="fixed inset-0 flex items-center justify-center"
+      class="fixed inset-0 flex items-center justify-center text-[var(--font-color)]"
       style="z-index: 50"
       :class="{ 'blow-up': isBlowUp }"
     >
@@ -30,7 +30,7 @@
         class="bg-color p-4 rounded-lg shadow-xl min-w-[50%] transform transition-all duration-300 ease-in-out backdrop-blur-[2px] fixed max-w-[90%]"
         :class="{
           'opacity-0 scale-95 slide-bottom': !showModal,
-          'opacity-100 scale-100 slide-top': showModal,
+          'opacity-100 scale-100 slide-top': showModal
         }"
       >
         <div class="text-base flex font-semiboldflex items-center justify-between">
@@ -49,95 +49,95 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from "vue";
-import { Icon, iconLoaded } from "@iconify/vue";
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { Icon, iconLoaded } from '@iconify/vue'
 
 const props = defineProps<{
-  isShow: boolean;
-  lockScroll?: boolean; // 控制滚动的
-  isBlur?: boolean; //是否模糊背景
-  title: string;
-}>();
+  isShow: boolean
+  lockScroll?: boolean // 控制滚动的
+  isBlur?: boolean //是否模糊背景
+  title: string
+}>()
 
-const targetDiv = ref(null);
-const isBlowUp = ref(false);
+const targetDiv = ref(null)
+const isBlowUp = ref(false)
 // 自主状态管理
-const showModal = ref(false);
-const modalContent = ref<HTMLElement | null>(null);
+const showModal = ref(false)
+const modalContent = ref<HTMLElement | null>(null)
 
 // 动画类计算属性
 const modalClasses = computed(() => ({
-  "opacity-0 scale-95": !showModal.value,
-  "opacity-100 scale-100": showModal.value,
-}));
+  'opacity-0 scale-95': !showModal.value,
+  'opacity-100 scale-100': showModal.value
+}))
 
 // 对外开放方法
 const open = () => {
-  showModal.value = true;
-  lockScroll();
-};
+  showModal.value = true
+  lockScroll()
+}
 
 const close = () => {
-  showModal.value = false;
-  unlockScroll();
-};
+  showModal.value = false
+  unlockScroll()
+}
 
 const lockScroll = () => {
   if (props.lockScroll !== false) {
     // 默认启用
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden'
   }
-};
+}
 
 const unlockScroll = () => {
   if (props.lockScroll !== false) {
-    document.body.style.overflow = "auto";
+    document.body.style.overflow = 'auto'
   }
-};
+}
 
 // 点击外部关闭
 const clickOutsideHandler = (event: MouseEvent) => {
   if (modalContent.value && !modalContent.value.contains(event.target as Node)) {
-    close();
+    close()
   }
-};
+}
 
 // 键盘事件监听
 const keydownHandler = (e: KeyboardEvent) => {
-  if (e.key === "Escape") close();
-};
+  if (e.key === 'Escape') close()
+}
 
 // 点击事件的处理函数
 const handleClickOutside = (event) => {
   // 判断点击目标是否在 targetDiv 内部
   if (targetDiv.value && !targetDiv.value.contains(event.target) && showModal.value) {
-    console.log("点击了弹窗外部");
-    isBlowUp.value = true;
+    console.log('点击了弹窗外部')
+    isBlowUp.value = true
     setTimeout(() => {
-      isBlowUp.value = false;
-    }, 500);
+      isBlowUp.value = false
+    }, 500)
   }
-};
+}
 
 // 生命周期管理
 onMounted(() => {
-  document.addEventListener("click", clickOutsideHandler);
-  document.addEventListener("keydown", keydownHandler);
-  document.addEventListener("click", handleClickOutside);
-});
+  document.addEventListener('click', clickOutsideHandler)
+  document.addEventListener('keydown', keydownHandler)
+  document.addEventListener('click', handleClickOutside)
+})
 
 onUnmounted(() => {
-  document.removeEventListener("click", clickOutsideHandler);
-  document.removeEventListener("keydown", keydownHandler);
-  document.removeEventListener("click", handleClickOutside);
-  document.body.style.overflow = "auto";
-});
+  document.removeEventListener('click', clickOutsideHandler)
+  document.removeEventListener('keydown', keydownHandler)
+  document.removeEventListener('click', handleClickOutside)
+  document.body.style.overflow = 'auto'
+})
 
 // 可选：暴露方法给父组件
 defineExpose({
   open,
-  close,
-});
+  close
+})
 </script>
 
 <style lang="scss" scoped>
@@ -219,7 +219,8 @@ defineExpose({
 }
 
 .bg-color {
-  background: #f9f3f3f7;
+  background: var(--modal-bg-color);
+  border: 1px solid #f9f3f3f7;
   // position: absolute;
   // top: 50%;
   // left: 50%;

@@ -12,7 +12,7 @@
       <div class="ball"></div>
     </section>
     <div
-      class="text-center"
+      class="text-center text-[var(--font-color)]"
       :class="[isFull ? 'w-full top-[calc(50%+4rem)] fixed' : 'mt-12 relative']"
     >
       {{ textList[index] }}
@@ -21,21 +21,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useLoadingStore } from "@/stores/pinia";
+import { ref } from 'vue'
+import { useLoadingStore } from '@/stores/pinia'
 
-const loadingStore = useLoadingStore();
-const isFull = ref(true);
-const index = ref(0);
+const loadingStore = useLoadingStore()
+const isFull = ref(true)
+const index = ref(0)
 const textList = ref([
-  "别着急，坐和放宽。",
-  "皇上别急，奴家正在玩命加载中。",
-  "耐心等待，浪漫即将上演。",
-  "当大象跳舞时，时间总是稍微放慢了节奏。",
-  "计时已启动,正在加载期待与喜悦。",
-  "一大波内容即将到来。",
-]);
-index.value = Math.floor(Math.random() * 6);
+  '别着急，坐和放宽。',
+  '皇上别急，奴家正在玩命加载中。',
+  '耐心等待，浪漫即将上演。',
+  '当大象跳舞时，时间总是稍微放慢了节奏。',
+  '计时已启动,正在加载期待与喜悦。',
+  '一大波内容即将到来。'
+])
+index.value = Math.floor(Math.random() * 6)
 </script>
 
 <style lang="css" scoped>

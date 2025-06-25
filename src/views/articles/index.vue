@@ -1,5 +1,5 @@
 <template>
-  <div class="m-auto max-w-[850px] pt-[3rem]">
+  <div class="m-auto max-w-[850px] pt-[3rem] text-[var(--font-color)]">
     <h1 class="text-3xl">全部文章</h1>
     <div class="mt-8" v-for="item in 3" :key="item" @click="jumpDetails">
       <HoverCard></HoverCard>
@@ -8,11 +8,11 @@
 </template>
 
 <script setup lang="ts">
-import { MdPreview } from "md-editor-v3";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { MdPreview } from 'md-editor-v3'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
 const content = ref(`
 ## # 生命的旷野
 
@@ -50,9 +50,9 @@ error
 
 ![11](https://bu.dusays.com/2024/10/02/66fd693ea4eab.jpg)
 
-`);
+`)
 
-const jumpDetails=()=>{
-    router.push(`/details/book`);
+const jumpDetails = () => {
+  router.push(`/details/book`)
 }
 </script>

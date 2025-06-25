@@ -2,7 +2,7 @@ import { createApp, nextTick } from 'vue'
 import { createPinia } from 'pinia'
 // import './style.css'
 import App from './App.vue'
-import "./output.css";
+import "./tailwind-compilation.css";
 import './tailwind.css'
 import router from '@/router/index'
 import { scrollAnimation } from './utils/scrollAnimation'
@@ -13,7 +13,7 @@ import { message } from '@/components/my-ui/notifications/notifications'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { initMarkdownCollapse } from './utils/markdown/mdCollapse';
 import { initMarkdownCarousel } from './utils/markdown/mdCarousel';
-import { initHoverCard } from './utils/markdown/mdHoverLink';
+import { initHoverCard, initCardHoverEffect } from './utils/markdown/mdHoverLink';
 
 config({
   markdownItConfig(mdit) {
@@ -62,15 +62,17 @@ router.afterEach(() => {
     if (disposeCarousel) {
       disposeCarousel(); // 卸载上一次绑定
     }
-    disposeCarousel = initMarkdownCarousel(); 
+    disposeCarousel = initMarkdownCarousel();
     if (disposeHoverCard) {
       disposeHoverCard(); // 卸载上一次绑定
     }
-    disposeHoverCard = initHoverCard(); 
+    disposeHoverCard = initHoverCard();
     if (disposeCollapse) {
       disposeCollapse(); // 卸载上一次绑定
     }
-    disposeCollapse = initMarkdownCollapse(); 
+    disposeCollapse = initMarkdownCollapse();
+
+    initCardHoverEffect();
   })
 })
 
