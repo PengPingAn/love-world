@@ -213,8 +213,6 @@ warning
 error
 :::
 
-![11](https://bu.dusays.com/2024/10/02/66fd693ea4eab.jpg)
-
 `);
 const editorId = "preview-only-notes";
 const myModal = ref(null);
