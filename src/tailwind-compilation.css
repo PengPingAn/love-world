@@ -835,6 +835,10 @@ video {
   --input-border-rgba2: rgba(79, 70, 229, 0);
   --hover-card-bg-color: #f9f9f9;
   --md-collapse-inner-bg-color: #fff0f5;
+  --skeleton-gradient-color: linear-gradient(90deg,
+        #f0f0f0 25%,
+        #e5e5e5 50%,
+        #f0f0f0 75%);
   --foreground: 222.2 84% 4.9%;
   --card: 0 0% 100%;
   --card-foreground: 222.2 84% 4.9%;
@@ -870,6 +874,10 @@ video {
   --input-border-rgba1: rgba(232, 232, 244, 0.4);
   --input-border-rgba2: rgba(234, 233, 249, 0);
   --hover-card-bg-color: #1a1919de;
+  --skeleton-gradient-color: linear-gradient(90deg,
+        #2a2a2a 25%,
+        #3a3a3a 50%,
+        #2a2a2a 75%);
   --md-collapse-inner-bg-color: transparent --foreground: 210 40% 98%;
   --card: 222.2 84% 4.9%;
   --card-foreground: 210 40% 98%;
@@ -1087,10 +1095,6 @@ video {
   margin: 0px !important;
 }
 
-.m-14 {
-  margin: 3.5rem;
-}
-
 .m-4 {
   margin: 1rem;
 }
@@ -1130,6 +1134,10 @@ video {
   margin-bottom: 2.5rem;
 }
 
+.mb-14 {
+  margin-bottom: 3.5rem;
+}
+
 .mb-4 {
   margin-bottom: 1rem;
 }
@@ -1164,6 +1172,10 @@ video {
 
 .mt-12 {
   margin-top: 3rem;
+}
+
+.mt-14 {
+  margin-top: 3.5rem;
 }
 
 .mt-2 {
@@ -3097,6 +3109,11 @@ video {
   .sm\:text-lg {
     font-size: 1.125rem;
     line-height: 1.75rem;
+  }
+
+  .sm\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 
   .sm\:text-xl {
