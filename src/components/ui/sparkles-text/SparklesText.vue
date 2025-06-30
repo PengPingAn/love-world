@@ -1,9 +1,10 @@
 <template>
   <div
-    class="text-7xl font-bold flex justify-center gap-3 flex-col items-center p-10"
+    class="font-bold flex justify-center gap-3 flex-col items-center p-6 sm:p-10 text-center"
     :class="props.class"
   >
     <span class="relative inline-block">
+      <!-- 闪光动画 -->
       <template v-for="sparkle in sparkles" :key="sparkle.id">
         <Motion
           :initial="{ opacity: 0, scale: 0, rotate: 75 }"
@@ -34,29 +35,32 @@
           />
         </Motion>
       </template>
-      <!-- {{ text }} -->
 
-      <div class="flex justify-center gap-8 flex-col items-center">
-        <div class="text-4xl">我们一起走过的</div>
-        <div>
-          <span style="font-size: 2.5rem">第</span>
-          <span style="font-size: 3.5rem">{{ timeDifference.years }}</span>
-          <span style="font-size: 2.5rem">年</span>
-          <span style="font-size: 3.5rem">{{ timeDifference.months }}</span>
-          <span style="font-size: 2.5rem">月</span>
-          <span style="font-size: 3.5rem">{{ timeDifference.days }}</span>
-          <span style="font-size: 2.5rem">日</span>
-          <span style="font-size: 3.5rem">{{ timeDifference.hours }}</span>
-          <span style="font-size: 2.5rem">时</span>
-          <span style="font-size: 3.5rem">{{ timeDifference.minutes }}</span>
-          <span style="font-size: 2.5rem">分</span>
-          <span style="font-size: 3.5rem">{{ timeDifference.seconds }}</span>
-          <span style="font-size: 2.5rem">秒</span>
+      <!-- 文本内容 -->
+      <div class="flex flex-col justify-center items-center gap-4">
+        <div class="text-xl sm:text-3xl md:text-4xl">我们一起走过的</div>
+        <div
+          class="flex flex-wrap justify-center items-baseline gap-x-1 gap-y-2 text-[var(--font-color)]"
+        >
+          <span class="text-base sm:text-2xl">第</span>
+          <span class="text-2xl sm:text-4xl md:text-5xl">{{ timeDifference.years }}</span>
+          <span class="text-base sm:text-2xl">年</span>
+          <span class="text-2xl sm:text-4xl md:text-5xl">{{ timeDifference.months }}</span>
+          <span class="text-base sm:text-2xl">月</span>
+          <span class="text-2xl sm:text-4xl md:text-5xl">{{ timeDifference.days }}</span>
+          <span class="text-base sm:text-2xl">日</span>
+          <span class="text-2xl sm:text-4xl md:text-5xl">{{ timeDifference.hours }}</span>
+          <span class="text-base sm:text-2xl">时</span>
+          <span class="text-2xl sm:text-4xl md:text-5xl">{{ timeDifference.minutes }}</span>
+          <span class="text-base sm:text-2xl">分</span>
+          <span class="text-2xl sm:text-4xl md:text-5xl">{{ timeDifference.seconds }}</span>
+          <span class="text-base sm:text-2xl">秒</span>
         </div>
       </div>
     </span>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { Motion } from 'motion-v'

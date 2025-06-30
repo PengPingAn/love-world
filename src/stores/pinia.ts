@@ -39,3 +39,15 @@ export const useEditorThemeStore = defineStore('editorTheme', {
   },
   persist: true // 开启持久化
 })
+
+export const useWebSocketStore = defineStore('webSocket', {
+  state: () => ({
+    socketId: ''
+  }),
+  actions: {
+    setUser(socketId: string) {
+      this.socketId = socketId
+    }
+  },
+  persist: true // 开启持久化
+})

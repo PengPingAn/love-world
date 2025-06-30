@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref, watch } from "vue";
+import { onMounted, onBeforeUnmount, ref, watch, watchEffect } from "vue";
 import Head from "./components/head.vue";
 import Foot from "@/views/foot/index.vue";
 import ThemeTransition from "./components/ThemeTransition.vue";
 import { useRoute } from "vue-router";
+import { getSocketId } from "@/api/homt";
+import { getBrowserFingerprint } from "@/utils/useFingerprint";
+import useWebSocket from "@/utils/websocket";
 
 const fireflyContainer = ref<HTMLDivElement | null>(null);
 const numFireflies = 20;
@@ -60,7 +63,11 @@ function checkTheme() {
   }
 }
 
-onMounted(() => {
+const wsHooks = ref<any>(null);
+const socketId = ref<string | null>(null);
+const socketCount = ref(0);
+const socketStatus = ref<boolean>(false);
+onMounted(async () => {
   checkTheme();
   observer = new MutationObserver(() => {
     checkTheme();
@@ -69,10 +76,58 @@ onMounted(() => {
     attributes: true,
     attributeFilter: ["class"],
   });
+
+  const fingerprint = await getBrowserFingerprint();
+  getSocketId({ req: fingerprint }).then((res) => {
+    socketId.value = res.data;
+  });
 });
 
 onBeforeUnmount(() => {
   observer?.disconnect();
+});
+
+watchEffect(() => {
+  if (!socketId.value) return;
+
+  wsHooks.value = useWebSocket({
+    url: `ws://localhost:5002/ws/chat?socket_id=${socketId.value}`,
+    reconnectTimeout: 3000,
+    maxRetries: 5,
+  });
+
+  wsHooks.value.open(); // 建立连接
+
+  // 监听连接成功
+  wsHooks.value.on("open", () => {
+    console.log("[WS] 连接成功");
+    socketStatus.value = true;
+  });
+
+  wsHooks.value.on("close", () => {
+    socketStatus.value = false;
+  });
+
+  wsHooks.value.on("error", () => {
+    socketStatus.value = false;
+  });
+
+  // 监听消息
+  wsHooks.value.on("message", (data) => {
+    console.log("[WS] 收到消息：", data);
+    switch (data.type) {
+      case "pong":
+
+      break;
+      case "scoketCount":
+        socketCount.value = data.data;
+        break;
+
+      default:
+        break;
+    }
+    // 你可以在这里处理消息内容
+  });
 });
 
 // 当前主题（'light' or 'dark'）
@@ -87,7 +142,7 @@ watch(route, () => {
 
 <template>
   <div class="min-h-screen flex flex-col">
-    <Head />
+    <Head :socketCount="socketCount" :socketStatus="socketStatus" />
     <div class="firefly-container" ref="fireflyContainer" aria-hidden="true"></div>
 
     <div class="pt-[4rem] m-[5rem] ml-[1rem] mr-[1rem] md:m-[5rem] flex-1">

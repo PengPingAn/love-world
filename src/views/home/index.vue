@@ -1,155 +1,142 @@
 <template>
-  <div class="h-screen flex justify-around flex-col m-[-4rem]">
-    <div style="display: grid; grid-template-columns: 40% 60%; align-items: center">
-      <div class="flex flex-col w-fit mx-auto items-start">
-        <h1 class="text-balance text-center text-4xl font-bold p-2">
-          <TextHighlight class="bg-gradient-to-r from-indigo-300 to-purple-300">
-            This is our space !
-          </TextHighlight>
-        </h1>
-
-        <BlurReveal :delay="0.2" :duration="0.75" class="p-2">
-          <h2
-            class="text-3xl font-bold tracking-tighter xl:text-6xl/none sm:text-5xl pb-1 text-[var(--font-color)]"
-          >
-            远方的朋友
-            <span style="animation: hand 2s ease-in-out infinite; position: absolute"
-              >👋</span
-            >
-          </h2>
-          <span
-            class="text-pretty text-xl tracking-tighter xl:text-4xl/none sm:text-3xl text-[var(--font-color)]"
-          >
-            欢迎来到我们的小世界
-          </span>
-        </BlurReveal>
-      </div>
-
-      <div class="relative">
-        <AnimatedTestimonials :testimonials="testimonials" />
-      </div>
-    </div>
-    <div class="flex items-center text-lg flex-col p-5 text-[var(--font-color)]">
-      <div>“总之岁月漫长，然而值得等待”</div>
-      <div class="bounce" style="animation: float 2s ease-in-out infinite">
-        <Icon icon="meteor-icons:angle-down" width="2rem"></Icon>
-      </div>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-4 pt-24 pb-24 gap-[1rem]">
-    <Card></Card>
-  </div>
-  <div>
-    <SafariCard>
-      <SparklesText
-        text=""
-        :colors="{ first: '#9E7AFF', second: '#FE8BBB' }"
-        :sparkles-count="20"
-        class="text-sm text-[var(--font-color)]"
-      />
-    </SafariCard>
-  </div>
-  <div class="grid grid-cols-1 [@media(min-width:1200px)]:grid-cols-2 gap-8 m-14">
-    <template v-for="(item, index) in tags" :key="item">
-      <div class="flip-horizontal-bottom" v-scroll-animate>
-        <TagCard :color="colorClasses[index % colorClasses.length]" :icon="item.icon">
-          <div
-            class="flex w-full justify-between items-center"
-            style="font-family: 'Noto Serif SC', serif"
-          >
-            <div class="text-white">
-              {{ item.label }}
-            </div>
-            <div class="text-lg text-white flex flex-col">
-              <span>{{ item.time }}</span>
-              <span>过了{{ calculateTimeDifference(item.time).totalDays }}天</span>
-            </div>
-          </div>
-        </TagCard>
-      </div>
-    </template>
-  </div>
-  <SafariCard>
+  <!-- 全屏容器，支持纵向滚动布局 -->
+  <div class="min-h-screen flex flex-col justify-between px-4 sm:px-8">
     <div
-      class="flex w-full flex-row items-center p-4 cursor-pointer justify-start ml-[1rem] mr-[1rem]"
+      style="
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      "
     >
-      <AnimatedTooltip :items="people" :isOverflow="true" />
+      <!-- 顶部文字 + 动画 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-4 sm:gap-10 py-10">
+        <div class="flex flex-col items-start text-center md:text-left">
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold p-2 leading-tight">
+            <TextHighlight class="bg-gradient-to-r from-indigo-300 to-purple-300">
+              This is our space !
+            </TextHighlight>
+          </h1>
+
+          <BlurReveal :delay="0.2" :duration="0.75" class="p-2">
+            <h2
+              class="text-2xl sm:text-4xl font-bold pb-2 relative text-[var(--font-color)] text-left"
+            >
+              远方的朋友
+              <span class="absolute animate-[hand_2s_ease-in-out_infinite]">👋</span>
+            </h2>
+            <p class="text-base sm:text-xl text-[var(--font-color)]">欢迎来到我们的小世界</p>
+          </BlurReveal>
+        </div>
+
+        <div class="relative w-full">
+          <AnimatedTestimonials :testimonials="testimonials" />
+        </div>
+      </div>
+
+      <!-- 底部文案 -->
+      <div class="flex flex-col items-center text-base sm:text-lg p-4 text-[var(--font-color)]">
+        <p>“总之岁月漫长，然而值得等待”</p>
+        <div class="bounce animate-[float_2s_ease-in-out_infinite] mt-2">
+          <Icon icon="meteor-icons:angle-down" width="2rem"></Icon>
+        </div>
+      </div>
     </div>
-  </SafariCard>
 
-  <div
-    class="relative flexw-full m-14 flex-col items-center justify-center overflow-hidden rounded-lg bg-background md:shadow-xl"
-  >
-    <!-- First Marquee -->
-    <Marquee pause-on-hover class="[--duration:20s]">
-      <ReviewCard
-        v-for="review in firstRow"
-        :key="review.username"
-        :img="review.img"
-        :name="review.name"
-        :username="review.username"
-        :body="review.body"
-      />
-    </Marquee>
-
-    <!-- Second Marquee (reverse) -->
-    <Marquee reverse pause-on-hover class="[--duration:20s]">
-      <ReviewCard
-        v-for="review in secondRow"
-        :key="review.username"
-        :img="review.img"
-        :name="review.name"
-        :username="review.username"
-        :body="review.body"
-      />
-    </Marquee>
-
-    <Marquee reverse pause-on-hover class="[--duration:20s]">
-      <ReviewCard
-        v-for="review in secondRow"
-        :key="review.username"
-        :img="review.img"
-        :name="review.name"
-        :username="review.username"
-        :body="review.body"
-      />
-    </Marquee>
-
-    <!-- Left Gradient -->
-    <div
-      class="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-background"
-    ></div>
-
-    <!-- Right Gradient -->
-    <div
-      class="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-background"
-    ></div>
-  </div>
-
-  <div class="grid grid-cols-1 [@media(min-width:1200px)]:grid-cols-2">
-    <div class="m-4" v-for="item in 3" :key="item" @click="jumpDetails">
-      <HoverCard :card="true"></HoverCard>
+    <!-- 卡片区 -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 py-12">
+      <Card />
     </div>
+
+    <!-- SafariCard + sparkles -->
+    <div class="px-4 mt-4 mb-4">
+      <SafariCard>
+        <SparklesText
+          text=""
+          :colors="{ first: '#9E7AFF', second: '#FE8BBB' }"
+          :sparkles-count="20"
+          class="text-sm text-[var(--font-color)]"
+        />
+      </SafariCard>
+    </div>
+
+    <!-- 标签卡片区 -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 m-4">
+      <template v-for="(item, index) in tags" :key="item">
+        <div class="flip-horizontal-bottom" v-scroll-animate>
+          <TagCard :color="colorClasses[index % colorClasses.length]" :icon="item.icon">
+            <div
+              class="flex justify-between items-center font-serif text-white w-full justify-between"
+            >
+              <div class="text-base sm:text-2xl">{{ item.label }}</div>
+              <div class="text-xs sm:text-sm sm:text-base flex flex-col text-right">
+                <span>{{ item.time }}</span>
+                <span>过了{{ calculateTimeDifference(item.time).totalDays }}天</span>
+              </div>
+            </div>
+          </TagCard>
+        </div>
+      </template>
+    </div>
+
+    <div class="px-4 mt-4 mb-4">
+      <SafariCard>
+        <div
+          class="flex w-full flex-row items-center p-4 cursor-pointer justify-start ml-[1rem] mr-[1rem]"
+        >
+          <AnimatedTooltip :items="people" :isOverflow="true" />
+        </div>
+      </SafariCard>
+    </div>
+
+    <!-- 底部头像滚动 -->
+    <div
+      class="m-4 relative flex flex-col items-center justify-center overflow-hidden bg-background p-4 md:shadow-xl rounded-lg"
+    >
+      <Marquee pause-on-hover class="[--duration:20s]">
+        <ReviewCard v-for="review in firstRow" :key="review.username" v-bind="review" />
+      </Marquee>
+
+      <Marquee reverse pause-on-hover class="[--duration:20s]">
+        <ReviewCard v-for="review in secondRow" :key="review.username" v-bind="review" />
+      </Marquee>
+
+      <!-- 渐变遮罩 -->
+      <div
+        class="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-background"
+      ></div>
+      <div
+        class="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-background"
+      ></div>
+    </div>
+
+    <!-- hover card -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
+      <div v-for="item in 3" :key="item" @click="jumpDetails">
+        <HoverCard :card="true" />
+      </div>
+    </div>
+
+    <!-- modal -->
+    <MyModal :title="'祝福留言'" ref="myModal" :lock-scroll="false">
+      <div v-for="item in 100" :key="item" class="text-sm p-2">我是内容</div>
+    </MyModal>
   </div>
-  <!-- <div class="w-full max-w-[85%] mx-auto rounded-lg bottom-8" v-html="html"></div> -->
-  <MyModal :title="'祝福留言'" ref="myModal" :lock-scroll="false">
-    <div v-for="item in 100" :key="item">我是内容</div>
-  </MyModal>
 </template>
 
+
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
-import { useColorMode } from "@vueuse/core";
-import { codeToHtml, createHighlighter } from "shiki";
-import { Icon, iconLoaded } from "@iconify/vue";
-import { cn } from "@/lib/utils";
-import MyModal from "@/components/my-ui/modal/MyModal.vue";
-import { useRouter } from "vue-router";
-import { MdEditor, MdPreview } from "md-editor-v3";
-import "md-editor-v3/lib/style.css";
-import "md-editor-v3/lib/preview.css";
-import Card from "./card.vue";
+import { computed, ref, onMounted } from 'vue'
+import { useColorMode } from '@vueuse/core'
+import { codeToHtml, createHighlighter } from 'shiki'
+import { Icon, iconLoaded } from '@iconify/vue'
+import { cn } from '@/lib/utils'
+import MyModal from '@/components/my-ui/modal/MyModal.vue'
+import { useRouter } from 'vue-router'
+import { MdEditor, MdPreview } from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
+import 'md-editor-v3/lib/preview.css'
+import Card from './card.vue'
 
 const content = ref(`
 :::carousel
@@ -213,191 +200,193 @@ warning
 error
 :::
 
-`);
-const editorId = "preview-only-notes";
-const myModal = ref(null);
-const isDark = computed(() => useColorMode().value == "dark");
-const router = useRouter();
+![11](https://bu.dusays.com/2024/10/02/66fd693ea4eab.jpg)
+
+`)
+const editorId = 'preview-only-notes'
+const myModal = ref(null)
+const isDark = computed(() => useColorMode().value == 'dark')
+const router = useRouter()
 const timeDifference = ref({
   years: 0,
   months: 0,
   days: 0,
   hours: 0,
   minutes: 0,
-  seconds: 0,
-});
+  seconds: 0
+})
 const testimonials = [
   {
-    quote: "01年的小男孩，愿望是世界和平",
-    name: "平安",
-    designation: "平平安安，岁岁年年",
-    image: "https://q1.qlogo.cn/g?b=qq&nk=256260842&s=640",
+    quote: '01年的小男孩，愿望是世界和平',
+    name: '平安',
+    designation: '平平安安，岁岁年年',
+    image: 'https://q1.qlogo.cn/g?b=qq&nk=256260842&s=640'
   },
   {
-    quote: "03的小女孩，愿望是世界和平",
-    name: "粥粥",
-    designation: "吃喝不愁，快乐自由",
-    image: "https://q1.qlogo.cn/g?b=qq&nk=1708215096&s=640",
-  },
-];
+    quote: '03的小女孩，愿望是世界和平',
+    name: '粥粥',
+    designation: '吃喝不愁，快乐自由',
+    image: 'https://q1.qlogo.cn/g?b=qq&nk=1708215096&s=640'
+  }
+]
 
 const people = [
   {
     id: 1,
-    name: "John Doe",
-    designation: "Software Engineer",
+    name: 'John Doe',
+    designation: 'Software Engineer',
     image:
-      "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3387&q=80",
+      'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3387&q=80'
   },
   {
     id: 2,
-    name: "Robert Johnson",
-    designation: "Product Manager",
+    name: 'Robert Johnson',
+    designation: 'Product Manager',
     image:
-      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60",
+      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60'
   },
   {
     id: 3,
-    name: "Jane Smith",
-    designation: "Data Scientist",
+    name: 'Jane Smith',
+    designation: 'Data Scientist',
     image:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YXZhdGFyfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60",
+      'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YXZhdGFyfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60'
   },
   {
     id: 4,
-    name: "Emily Davis",
-    designation: "UX Designer",
+    name: 'Emily Davis',
+    designation: 'UX Designer',
     image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGF2YXRhcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
+      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGF2YXRhcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60'
   },
   {
     id: 5,
-    name: "Tyler Durden",
-    designation: "Soap Developer",
+    name: 'Tyler Durden',
+    designation: 'Soap Developer',
     image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3540&q=80",
+      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3540&q=80'
   },
   {
     id: 6,
-    name: "Dora",
-    designation: "The Explorer",
+    name: 'Dora',
+    designation: 'The Explorer',
     image:
-      "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3534&q=80",
-  },
-];
+      'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3534&q=80'
+  }
+]
 const reviews = [
   {
-    name: "Jack",
-    username: "@jack",
+    name: 'Jack',
+    username: '@jack',
     body: "I've never seen anything like this before. It's amazing. I love it.",
-    img: "https://avatar.vercel.sh/jack",
+    img: 'https://avatar.vercel.sh/jack'
   },
   {
-    name: "Jill",
-    username: "@jill",
+    name: 'Jill',
+    username: '@jill',
     body: "I don't know what to say. I'm speechless. This is amazing.",
-    img: "https://avatar.vercel.sh/jill",
+    img: 'https://avatar.vercel.sh/jill'
   },
   {
-    name: "John",
-    username: "@john",
+    name: 'John',
+    username: '@john',
     body: "I'm at a loss for words. This is amazing. I love it.",
-    img: "https://avatar.vercel.sh/john",
+    img: 'https://avatar.vercel.sh/john'
   },
   {
-    name: "Jane",
-    username: "@jane",
+    name: 'Jane',
+    username: '@jane',
     body: "I'm at a loss for words. This is amazing. I love it.",
-    img: "https://avatar.vercel.sh/jane",
+    img: 'https://avatar.vercel.sh/jane'
   },
   {
-    name: "Jenny",
-    username: "@jenny",
+    name: 'Jenny',
+    username: '@jenny',
     body: "I'm at a loss for words. This is amazing. I love it.",
-    img: "https://avatar.vercel.sh/jenny",
+    img: 'https://avatar.vercel.sh/jenny'
   },
   {
-    name: "James",
-    username: "@james",
+    name: 'James',
+    username: '@james',
     body: "I'm at a loss for words. This is amazing. I love it.",
-    img: "https://avatar.vercel.sh/james",
-  },
-];
+    img: 'https://avatar.vercel.sh/james'
+  }
+]
 const tags = ref([
   {
-    icon: "emojione:beating-heart",
-    label: "拉拉扯扯一周年啦",
-    time: "2024-12-17",
+    icon: 'emojione:beating-heart',
+    label: '拉拉扯扯一周年啦',
+    time: '2024-12-17'
   },
   {
-    icon: "emojione:beating-heart",
-    label: "第一次约会",
-    time: "2023-11-26",
+    icon: 'emojione:beating-heart',
+    label: '第一次约会',
+    time: '2023-11-26'
   },
   {
-    icon: "emojione:beating-heart",
-    label: "第一次旅游",
-    time: "2024-03-01",
+    icon: 'emojione:beating-heart',
+    label: '第一次旅游',
+    time: '2024-03-01'
   },
   {
-    icon: "emojione:beating-heart",
-    label: "第一个100天",
-    time: "2024-03-26",
+    icon: 'emojione:beating-heart',
+    label: '第一个100天',
+    time: '2024-03-26'
   },
   {
-    icon: "emojione:beating-heart",
-    label: "我们在一起了",
-    time: "2023-12-17",
+    icon: 'emojione:beating-heart',
+    label: '我们在一起了',
+    time: '2023-12-17'
   },
   {
-    icon: "emojione:beating-heart",
-    label: "已经异地",
-    time: "2025-01-15",
-  },
-]);
+    icon: 'emojione:beating-heart',
+    label: '已经异地',
+    time: '2025-01-15'
+  }
+])
 // 预定义颜色组合（Tailwind 颜色类名）
-const colorClasses = ["#38bdf8", "#fca5a5", "#fb923c", "#65a30d", "#f9a8d4", "#fb923c"];
+const colorClasses = ['#38bdf8', '#fca5a5', '#fb923c', '#65a30d', '#f9a8d4', '#fb923c']
 
 // Split reviews into two rows
-const firstRow = ref(reviews.slice(0, reviews.length / 2));
-const secondRow = ref(reviews.slice(reviews.length / 2));
+const firstRow = ref(reviews.slice(0, reviews.length / 2))
+const secondRow = ref(reviews.slice(reviews.length / 2))
 
-const html = ref("");
+const html = ref('')
 
 onMounted(async () => {
   const highlighter = await createHighlighter({
-    langs: ["javascript", "css", "csharp"],
+    langs: ['javascript', 'css', 'csharp'],
     themes: [
       {
-        name: "my-theme",
+        name: 'my-theme',
         settings: [
           {
-            scope: ["comment"],
+            scope: ['comment'],
             settings: {
               // 使用 `rgb`、`hsl`、`hsla`，//
               // 或者任何你的渲染器支持的颜色。
-              foreground: "rgb(128, 128, 128)",
-            },
+              foreground: 'rgb(128, 128, 128)'
+            }
           },
           {
-            scope: ["string"],
+            scope: ['string'],
             settings: {
-              foreground: "#79b8ff", // CSS 变量
-            },
-          },
+              foreground: '#79b8ff' // CSS 变量
+            }
+          }
           // 更多
         ],
         // 背景和前景颜色
-        bg: "#ff66661a",
-        fg: "#005CC5",
-      },
+        bg: '#ff66661a',
+        fg: '#005CC5'
+      }
     ],
     lineOptions: [
-      { line: 2, classes: ["highlighted-line"] }, // 高亮特定行
-      { line: 3, color: "#FF000033" }, // 直接指定行背景色
+      { line: 2, classes: ['highlighted-line'] }, // 高亮特定行
+      { line: 3, color: '#FF000033' } // 直接指定行背景色
     ],
-    meta: { inline: true }, // 内联样式（无额外包裹标签）
-  });
+    meta: { inline: true } // 内联样式（无额外包裹标签）
+  })
 
   html.value = highlighter.codeToHtml(
     ` import { createHighlighter } from 'shiki'
@@ -417,73 +406,73 @@ onMounted(async () => {
     })
       `,
     {
-      lang: "javascript",
-      theme: "my-theme",
+      lang: 'javascript',
+      theme: 'my-theme'
     }
-  );
+  )
 
-  timeDifference.value = calculateTimeDifference("2023-12-17 00:00:00");
+  timeDifference.value = calculateTimeDifference('2023-12-17 00:00:00')
   setInterval(() => {
-    timeDifference.value = calculateTimeDifference("2023-12-17 00:00:00");
-  }, 1000);
-});
+    timeDifference.value = calculateTimeDifference('2023-12-17 00:00:00')
+  }, 1000)
+})
 
 const calculateTimeDifference = (targetDateTime) => {
   // 将目标日期时间字符串转换为 Date 对象
-  var targetDate = new Date(targetDateTime);
+  var targetDate = new Date(targetDateTime)
   // 获取当前时间
-  var currentDate = new Date();
+  var currentDate = new Date()
 
   // 计算时间差（毫秒）
-  var timeDifference = currentDate.getTime() - targetDate.getTime();
+  var timeDifference = currentDate.getTime() - targetDate.getTime()
 
   // 计算总天数差（取整）
-  const totalDays = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+  const totalDays = Math.floor(timeDifference / (1000 * 60 * 60 * 24))
 
   // 计算年份差
-  var years = currentDate.getFullYear() - targetDate.getFullYear();
+  var years = currentDate.getFullYear() - targetDate.getFullYear()
 
   // 获取当前月份和目标日期的月份差
-  var currentMonth = currentDate.getMonth();
-  var targetMonth = targetDate.getMonth();
-  var months = currentMonth - targetMonth;
+  var currentMonth = currentDate.getMonth()
+  var targetMonth = targetDate.getMonth()
+  var months = currentMonth - targetMonth
 
   // 如果月份差为负数，则年份差减1，并补上12个月
   if (months < 0) {
-    years--;
-    months += 12;
+    years--
+    months += 12
   }
 
   // 获取当前日期和目标日期的天数差
-  var currentDay = currentDate.getDate();
-  var targetDay = targetDate.getDate();
-  var days = currentDay - targetDay;
+  var currentDay = currentDate.getDate()
+  var targetDay = targetDate.getDate()
+  var days = currentDay - targetDay
 
   // 如果天数差为负数，则月份差减1，并补上对应的天数
   if (days < 0) {
-    months--;
+    months--
     // 获取上个月的总天数
-    var lastMonthDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), 0);
-    days += lastMonthDate.getDate();
+    var lastMonthDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), 0)
+    days += lastMonthDate.getDate()
   }
 
   // 获取当前时间和目标时间的小时、分钟、秒差
-  var hours = currentDate.getHours() - targetDate.getHours();
-  var minutes = currentDate.getMinutes() - targetDate.getMinutes();
-  var seconds = currentDate.getSeconds() - targetDate.getSeconds();
+  var hours = currentDate.getHours() - targetDate.getHours()
+  var minutes = currentDate.getMinutes() - targetDate.getMinutes()
+  var seconds = currentDate.getSeconds() - targetDate.getSeconds()
 
   // 处理负数情况
   if (seconds < 0) {
-    minutes--;
-    seconds += 60;
+    minutes--
+    seconds += 60
   }
   if (minutes < 0) {
-    hours--;
-    minutes += 60;
+    hours--
+    minutes += 60
   }
   if (hours < 0) {
-    days--;
-    hours += 24;
+    days--
+    hours += 24
   }
 
   return {
@@ -493,19 +482,19 @@ const calculateTimeDifference = (targetDateTime) => {
     hours: hours,
     minutes: minutes,
     seconds: seconds,
-    totalDays: totalDays,
-  };
-};
+    totalDays: totalDays
+  }
+}
 // 切换主体颜色（直接修改html的类）
 const toggleTheme = () => {
   // myModal.value.open()
-  const htmlElement = document.documentElement; // 获取html元素
-  htmlElement.classList.toggle("dark");
-};
+  const htmlElement = document.documentElement // 获取html元素
+  htmlElement.classList.toggle('dark')
+}
 
 const jumpDetails = () => {
-  router.push(`/details/book`);
-};
+  router.push(`/details/book`)
+}
 </script>
 
 <style lang="css">
@@ -537,8 +526,7 @@ const jumpDetails = () => {
 }
 
 .flip-horizontal-bottom {
-  -webkit-animation: flip-horizontal-bottom 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955)
-    both;
+  -webkit-animation: flip-horizontal-bottom 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955) both;
   animation: flip-horizontal-bottom 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955) both;
 }
 /* ----------------------------------------------

@@ -16,7 +16,12 @@
     --error-bg-color: rgb(255 235 235);
     --input-border-rgba1: rgba(79, 70, 229, 0.4);
     --input-border-rgba2: rgba(79, 70, 229, 0);
+    --hover-card-bg-color: #f9f9f9;
     --md-collapse-inner-bg-color: #fff0f5;
+    --skeleton-gradient-color: linear-gradient(90deg,
+        #f0f0f0 25%,
+        #e5e5e5 50%,
+        #f0f0f0 75%);
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -59,6 +64,11 @@
     --error-bg-color: transparent;
     --input-border-rgba1: rgba(232, 232, 244, 0.4);
     --input-border-rgba2: rgba(234, 233, 249, 0);
+    --hover-card-bg-color: #1a1919de;
+    --skeleton-gradient-color: linear-gradient(90deg,
+        #2a2a2a 25%,
+        #3a3a3a 50%,
+        #2a2a2a 75%);
     --md-collapse-inner-bg-color: transparent --foreground: 210 40% 98%;
 
     --card: 222.2 84% 4.9%;

@@ -15,6 +15,9 @@
     <div class="m-auto">
       <Signature :loading="loading" />
     </div>
+    <div>
+      <Tooltip :socketCount="props.socketCount" :socketStatus="props.socketStatus" />
+    </div>
   </div>
 </template>
 
@@ -23,6 +26,17 @@ import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Icon, iconLoaded } from "@iconify/vue";
 import Signature from "./signature.vue";
+
+const props = withDefaults(
+  defineProps<{
+    socketCount?: number;
+    socketStatus?: boolean;
+  }>(),
+  {
+    socketCount: 0,
+    socketStatus: false,
+  }
+);
 
 const loading = ref(true);
 const router = useRouter();

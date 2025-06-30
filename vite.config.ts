@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     vue(),
     //自动识别目录下的组件 组件命名需要是大驼峰 小驼峰不会被自动识别
-    //例如：BaseButton.vue(自动识别为 <BaseButton>) 
+    //例如：BaseButton.vue(自动识别为 <BaseButton>)
     //myButton.vue(识别不了)
     Components({
       dirs: ['src/components/ui', 'src/components/my-ui'], // 组件目录
@@ -24,6 +24,7 @@ export default defineConfig({
     }
   },
   server: {
+    host: '0.0.0.0', // 监听所有网络接口
     cors: true, // 默认启用并允许任何源
     open: false, // 在服务器启动时自动在浏览器中打开应用程序
     port: 8886,
@@ -31,11 +32,10 @@ export default defineConfig({
     proxy: {
       '^/api': {
         // target: 'http://localhost:1688',   //代理接口
-        target: 'http://localhost:9527',
-        changeOrigin: true,
+        target: 'http://localhost:5002',
+        changeOrigin: true
         //rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
-  },
-
+  }
 })

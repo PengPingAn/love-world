@@ -2,16 +2,16 @@
   <div>
     <template v-for="(item, index) in data" :key="item.id">
       <transition name="fade" @before-enter="beforeEnter" @enter="enter" @leave="leave">
-        <div class="mt-[1rem] mb-[1rem] flex gap-4 text-[var(--font-color)]">
+        <div class="flex gap-4 text-[var(--font-color)]">
           <div class="flex gap-4">
             <div :style="{ cursor: item.webSite ? 'pointer' : 'default' }" style="height: 0">
-              <div v-if="item.imgUrl" class="w-[2.5rem] h-[2.5rem]">
+              <div v-if="item.imgUrl" class="w-[2rem] h-[2rem]">
                 <img :src="item.imgUrl" class="rounded-full" />
               </div>
 
               <div
                 v-else
-                class="w-[2.5rem] h-[2.5rem] bg-[#dadadaab] leading-[2.5rem] text-center text-xl rounded-full font-serif"
+                class="w-[2rem] h-[2rem] bg-[#dadadaab] leading-[2rem] text-center text-xl rounded-full font-serif"
               >
                 {{ item.name.substring(0, 1) }}
               </div>
@@ -20,7 +20,7 @@
 
           <div class="w-full font-serif flex flex-col gap-2">
             <div class="leading-4 flex gap-2 items-end">
-              <div class="font-bold">
+              <div class="font-bold text-sm">
                 {{ item.nickName }}
               </div>
               <div class="text-xs text-[#adafb1]">

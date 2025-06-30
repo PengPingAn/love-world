@@ -33,7 +33,7 @@ li {
     animation-range: entry 100% cover 10%;
 
     &-span {
-      color: var(--font-color)
+      color: var(--font-color);
     }
   }
 }
@@ -47,7 +47,8 @@ li {
 .mark {
   --highlight: oklch(0.76 0.09 142 / 0.3);
   display: inline;
-  background: linear-gradient(120deg, var(--highlight) 50%, transparent 50%) 110% 0 / 200% 100% no-repeat;
+  background: linear-gradient(120deg, var(--highlight) 50%, transparent 50%) 110% 0 / 200% 100%
+    no-repeat;
 }
 
 .mark.animate {
@@ -110,6 +111,27 @@ li {
   text-decoration: underline !important;
   color: #3d92ff !important;
   text-decoration-color: rgba(241, 137, 46, 0.479) !important;
+  align-items: center;
+}
+.polaris-icon {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  margin-left: 4px;
+  background-color: #000000; // 默认颜色
+  mask-image: url('@/assets/svg/mingcute.svg'); // 替换为你的实际路径
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: url('@/assets/svg/mingcute.svg'); // 兼容 Safari
+}
+
+/* 暗黑模式适配 */
+
+.dark .polaris-icon {
+  background-color: #ffffff;
+  mask-image: url('@/assets/svg/mingcute.svg');
+  -webkit-mask-image: url('@/assets/svg/mingcute.svg');
 }
 
 .hover-link::before {
@@ -217,7 +239,7 @@ li {
   border: 1px solid #ccc;
   padding: 10px;
   z-index: 10001;
-  background: rgb(251, 251, 250);
+  background: var(--hover-card-bg-color);
   animation: dropdown 0.3s;
   box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);
   border-radius: 5px;
@@ -226,6 +248,7 @@ li {
   position: absolute;
   margin-top: 4px;
   opacity: 1;
+  color: var(--font-color);
 }
 
 /* 进入动画 */
@@ -258,8 +281,7 @@ li {
   display: block;
 }
 
-.hover-link:hover~.p-a-span {
-  color: #000;
+.hover-link:hover ~ .p-a-span {
   display: block;
 }
 
@@ -287,10 +309,12 @@ li {
   transition: all 0.2s ease;
   cursor: pointer;
 
-  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-      rgba(0, 136, 255, 0.15) 0%,
-      rgba(0, 136, 255, 0.08) 30%,
-      rgba(255, 255, 255, 0) 60%);
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(0, 136, 255, 0.15) 0%,
+    rgba(0, 136, 255, 0.08) 30%,
+    rgba(255, 255, 255, 0) 60%
+  );
 }
 
 .link-card:hover {
@@ -680,10 +704,12 @@ li {
     opacity: 0;
     transition: opacity 0.2s ease;
 
-    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        rgba(0, 136, 255, 0.15) 0%,
-        rgba(0, 136, 255, 0.08) 30%,
-        rgba(255, 255, 255, 0) 60%);
+    background: radial-gradient(
+      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(0, 136, 255, 0.15) 0%,
+      rgba(0, 136, 255, 0.08) 30%,
+      rgba(255, 255, 255, 0) 60%
+    );
     mix-blend-mode: lighten;
     filter: blur(10px);
   }

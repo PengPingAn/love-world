@@ -22,13 +22,28 @@
     <div class="m-auto max-w-[1000px] p-[5rem]">
       <LeaveMessageForm @submit="submit" />
       <SkeletonLoader :type="'comments'" />
-      <Comment :data="commentData" :isReply="true" @submit="submit" />
+      <div>
+        <Comment :data="commentData" :isReply="true" @submit="submit" />
+
+        <!-- 骨架屏 -->
+        <transition name="fade">
+          <div v-if="loading" class="skeletons">
+            <SkeletonLoader v-for="i in 3" :key="i" type="comments" />
+          </div>
+        </transition>
+
+        <!-- 触发器锚点 -->
+        <div ref="sentinel" class="sentinel"></div>
+      </div>
     </div>
+    <Foot />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, onUnmounted, nextTick } from 'vue'
+import Foot from '@/views/foot/index.vue'
+import { commentList, fetchComments } from './data'
 
 const circleUrl = ref([
   '/src/assets/wallhaven-1q83qg_3840x1600.png',
@@ -45,59 +60,44 @@ const bgImgList = ref([
   '/src/assets/bg-img/bgimg1.webp'
 ])
 const myInput = ref()
-const commentData = ref([
-  {
-    id: 1,
-    nickName: '张杰',
-    content: '祝你们百年好合',
-    webSite: 'https://baidu.com',
-    imgUrl:
-      'https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500',
-    time: '大约2小时前',
-    children: [
-      {
-        id: 11,
-        nickName: '灵动',
-        replyName: '张杰',
-        content: '我回复一下',
-        webSite: '',
-        imgUrl:
-          'https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500',
-        time: '大约2小时前'
-      }
-    ]
-  },
-  {
-    id: 2,
-    nickName: '热心市民',
-    content: '在爱的旅途中 坚守初心 一路相伴同行 祝福你们爱情长长久久',
-    webSite: '',
-    imgUrl:
-      'https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500',
-    time: '大约3小时前',
-    children: []
-  },
-  {
-    id: 3,
-    nickName: '小石头',
-    content: '你们的爱如阳光遍洒 使生活处处充满温暖 祝福长长久久',
-    webSite: '',
-    imgUrl:
-      'https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500',
-    time: '大约8小时前',
-    children: []
-  },
-  {
-    id: 4,
-    nickName: '消炎',
-    content: '愿君与卿情长久 朝朝暮暮共欢颜',
-    webSite: '',
-    imgUrl:
-      'https://img2.baidu.com/it/u=3652024792,1312709718&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500',
-    time: '大约1天前',
-    children: []
-  }
-])
+const commentData = ref([])
+const sentinel = ref(null)
+const loading = ref(false)
+const finished = ref(false)
+let observer = null
+let pageIndex = 1
+
+// 模拟异步加载评论
+async function loadMore() {
+  if (loading.value || finished.value) return
+  loading.value = true
+  console.log(loading.value)
+
+  // ✅ 暂时断开监听，防止重复触发
+  observer?.unobserve(sentinel.value)
+
+  // 模拟接口
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+  fetchComments(pageIndex++, 10).then((res) => {
+    res.data.forEach((e) => {
+      commentData.value.push(e)
+    })
+
+    // ✅ 数据加载完了就别再监听
+    if (commentData.value.length >= 30) {
+      finished.value = true
+    } else {
+      // ✅ 加一点延迟再重新监听，避免继续触发
+      setTimeout(() => {
+        if (sentinel.value && observer) {
+          observer.observe(sentinel.value)
+        }
+      }, 200)
+    }
+
+    loading.value = false
+  })
+}
 
 const toggleDiv = (event: any) => {
   const targetElement = event.target
@@ -107,7 +107,36 @@ const toggleDiv = (event: any) => {
   }
 }
 onMounted(() => {
-  commentData.value.forEach((d) => {
+  getAllComment()
+  imgIndex.value = Math.floor(Math.random() * 4)
+
+  loadMore()
+
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting && !loading.value && !finished.value) {
+        loadMore()
+      }
+    },
+    {
+      root: null,
+      rootMargin: '0px', // ⭐ 提前 200px 加载，提高体验
+      threshold: 1
+    }
+  )
+
+  nextTick(() => {
+    if (sentinel.value) {
+      observer.observe(sentinel.value)
+    }
+  })
+})
+onUnmounted(() => {
+  observer?.disconnect()
+})
+
+const getAllComment = () => {
+  commentList.forEach((d) => {
     const top = generateUniqueRandomNumber()
     const randomNumber = Math.floor(Math.random() * 2) // 生成1到10之间的随机整数
     const randomNumber2 = Math.floor(Math.random() * 30) + 10
@@ -122,10 +151,7 @@ onMounted(() => {
       imgUrl: d.imgUrl
     })
   })
-
-  imgIndex.value = Math.floor(Math.random() * 4)
-})
-
+}
 const btnSendMessage = (content, imgUrl) => {
   const top = generateUniqueRandomNumber()
   const randomNumber = Math.floor(Math.random() * 2) // 生成1到10之间的随机整数
@@ -221,11 +247,11 @@ function generateUniqueRandomNumber() {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 100vh;
+  min-height: 100vh;
 }
 .danmu-container {
   position: relative;
-  height: 100vh;
+  min-height: 100vh;
   overflow: hidden;
   background-image: url('/src/assets/wallhaven-1q83qg_3840x1600.png');
   background-size: cover;
@@ -251,6 +277,43 @@ function generateUniqueRandomNumber() {
     width: 2rem;
     height: 2rem;
     border-radius: 50%;
+  }
+}
+
+.comment-item {
+  padding: 50px;
+  border-bottom: 1px solid #eee;
+  background-color: #fff;
+  transition: background-color 0.2s;
+}
+
+.sentinel {
+  height: 1px;
+  // background: antiquewhite;
+}
+
+.skeletons {
+  padding: 12px 0;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

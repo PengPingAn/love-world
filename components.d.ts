@@ -47,6 +47,7 @@ declare module 'vue' {
     SparklesText: typeof import('./src/components/ui/sparkles-text/SparklesText.vue')['default']
     TagCard: typeof import('./src/components/my-ui/tag-card/TagCard.vue')['default']
     TextHighlight: typeof import('./src/components/ui/text-highlight/TextHighlight.vue')['default']
+    Tooltip: typeof import('./src/components/my-ui/tooltip/Tooltip.vue')['default']
     TracingBeam: typeof import('./src/components/ui/tracing-beam/TracingBeam.vue')['default']
   }
 }
