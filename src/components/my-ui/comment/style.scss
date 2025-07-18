@@ -1,73 +1,80 @@
 .hover-area {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    width: fit-content;
-    cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: fit-content;
+  cursor: pointer;
+  max-width: 98%;
 }
 
 .hover-trigger {
-    transition: all 0.3s;
-    background: #b9b9b945;
-    border-radius: 1px 10px 10px 10px;
-    padding: 5px 10px;
-    font-size: 15px;
-    width: fit-content;
-    position: relative;
+  transition: all 0.3s;
+  background: #b9b9b945;
+  border-radius: 1px 10px 10px 10px;
+  padding: 5px 10px;
+  font-size: 15px;
+  width: fit-content;
+  position: relative;
 }
 
 .hover-content {
-    position: absolute;
-    right: -12px;
-    bottom: -7px;
-    background: rgba(221, 245, 240, 0.808);
-    padding: 0.3rem;
-    border-radius: 10px;
-    opacity: 0;
-    transition: all 0.3s ease;
-    pointer-events: none;
+  position: absolute;
+  right: -12px;
+  bottom: -7px;
+  background: rgba(221, 245, 240, 0.808);
+  padding: 0.3rem;
+  border-radius: 10px;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
 }
 
 .hover-area:hover .hover-content {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .reply-form-container {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: 0.3s;
-    animation: fadeIn 0.3s ease-out;
-    overflow: hidden;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: 0.3s;
+  animation: fadeIn 0.3s ease-out;
+  overflow: hidden;
 }
 
-.reply-form-container>div {
-    min-height: 0;
+.reply-form-container > div {
+  min-height: 0;
 }
 
 @keyframes fadeIn {
+  //   0% {
+  //     transform: rotateX(0deg) scaleY(0.5);
+  //     opacity: 0.2;
+  //   }
+  //   50% {
+  //     transform: rotateX(0deg) scaleY(1.1);
+  //     opacity: 0.8;
+  //   }
+  //   100% {
+  //     transform: rotateX(0deg) scaleY(1);
+  //     opacity: 1;
+  //   }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 
-    //   0% {
-    //     transform: rotateX(0deg) scaleY(0.5);
-    //     opacity: 0.2;
-    //   }
-    //   50% {
-    //     transform: rotateX(0deg) scaleY(1.1);
-    //     opacity: 0.8;
-    //   }
-    //   100% {
-    //     transform: rotateX(0deg) scaleY(1);
-    //     opacity: 1;
-    //   }
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.host-tag {
+  color: #ffffff;
+  background: #66c071;
+  border-radius: 5px;
+  padding: 1px 5px;
 }

@@ -50,6 +50,22 @@ const routes = [
     meta: { title: TITLE_NAME + '404' },
     component: () => import('@/views/404/404.vue'),
     children: []
+  },
+  {
+    //基本格式
+    path: '/me',
+    name: 'me',
+    meta: { title: TITLE_NAME + '关于我' },
+    component: () => import('@/views/regarding/me.vue'),
+    children: []
+  },
+  {
+    //基本格式
+    path: '/login',
+    name: 'login',
+    meta: { title: TITLE_NAME + '登录' },
+    component: () => import('@/views/login/index.vue'),
+    children: []
   }
 ]
 

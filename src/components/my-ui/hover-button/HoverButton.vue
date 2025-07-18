@@ -47,7 +47,12 @@
               dur="0.5s"
               values="0;1"
             />
-            <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="20;0" />
+            <animate
+              fill="freeze"
+              attributeName="stroke-dashoffset"
+              dur="0.4s"
+              values="20;0"
+            />
           </path>
           <path stroke-dasharray="14" stroke-dashoffset="14" d="M6 19h12">
             <animate
@@ -96,7 +101,12 @@
           stroke-width="2"
           d="M12 3c4.97 0 9 4.03 9 9c0 4.97 -4.03 9 -9 9c-4.97 0 -9 -4.03 -9 -9c0 -4.97 4.03 -9 9 -9Z"
         >
-          <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.6s" values="64;0" />
+          <animate
+            fill="freeze"
+            attributeName="stroke-dashoffset"
+            dur="0.6s"
+            values="64;0"
+          />
         </path>
       </svg>
       <span class="action-content" data-content="祝福"></span>
@@ -104,7 +114,11 @@
 
     <button class="action" type="button" @click="toggleTheme">
       <Icon v-if="!isDark" class="action-icon" icon="line-md:moon-rising-loop"></Icon>
-      <Icon v-else class="action-icon" icon="line-md:moon-to-sunny-outline-loop-transition"></Icon>
+      <Icon
+        v-else
+        class="action-icon"
+        icon="line-md:moon-filled-to-sunny-filled-loop-transition"
+      ></Icon>
       <span class="action-content" :data-content="isDark ? 'Light' : 'Dark'"></span>
     </button>
 
@@ -138,7 +152,12 @@
               stroke-dashoffset="20"
               d="M12 9c1.66 0 3 1.34 3 3c0 1.66 -1.34 3 -3 3c-1.66 0 -3 -1.34 -3 -3c0 -1.66 1.34 -3 3 -3Z"
             >
-              <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.2s" values="20;0" />
+              <animate
+                fill="freeze"
+                attributeName="stroke-dashoffset"
+                dur="0.2s"
+                values="20;0"
+              />
             </path>
             <path
               stroke-dasharray="48"
@@ -185,116 +204,115 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
-import { useEditorThemeStore } from '@/stores/pinia'
-import { playThemeTransition } from '@/utils/themeTransition'
-import { Icon } from '@iconify/vue'
+import { onMounted, onUnmounted, ref } from "vue";
+import { useEditorThemeStore } from "@/stores/pinia";
+import { playThemeTransition } from "@/utils/themeTransition";
+import { Icon } from "@iconify/vue";
 
-const showButton = ref(false)
-const isHover = ref(false)
-let lastScrollY = 0
-const myModal = ref(null)
-const userStore = useEditorThemeStore()
-const isDark = ref(null)
+const showButton = ref(false);
+const isHover = ref(false);
+let lastScrollY = 0;
+const myModal = ref(null);
+const userStore = useEditorThemeStore();
+const isDark = ref(null);
 
 // 带节流的滚动处理
 const handleScroll = () => {
-  const currentScroll = window.scrollY
+  const currentScroll = window.scrollY;
 
   // 向下滚动时隐藏
   if (currentScroll > lastScrollY) {
-    showButton.value = true
+    showButton.value = true;
   } else {
-    showButton.value = currentScroll > 200
+    showButton.value = currentScroll > 200;
   }
 
-  lastScrollY = currentScroll
-}
+  lastScrollY = currentScroll;
+};
 
 // 带进度显示的滚动
-let scrollAnimationId: number | null = null
+let scrollAnimationId: number | null = null;
 
-const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4)
+const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
 
 const scrollToTop = (duration = 600) => {
   if (scrollAnimationId !== null) {
-    cancelAnimationFrame(scrollAnimationId)
+    cancelAnimationFrame(scrollAnimationId);
   }
 
-  const start = window.scrollY || document.documentElement.scrollTop
-  const startTime = performance.now()
+  const start = window.scrollY || document.documentElement.scrollTop;
+  const startTime = performance.now();
 
   const animate = (currentTime: number) => {
-    const elapsed = currentTime - startTime
-    const progress = Math.min(elapsed / duration, 1)
-    const eased = easeOutQuart(progress)
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = easeOutQuart(progress);
 
-    const scrollY = start * (1 - eased)
-    window.scrollTo(0, scrollY)
+    const scrollY = start * (1 - eased);
+    window.scrollTo(0, scrollY);
 
     if (progress < 1) {
-      scrollAnimationId = requestAnimationFrame(animate)
+      scrollAnimationId = requestAnimationFrame(animate);
     } else {
-      scrollAnimationId = null
-      removeInterruptListeners()
+      scrollAnimationId = null;
+      removeInterruptListeners();
     }
-  }
+  };
 
   const cancelScroll = () => {
     if (scrollAnimationId !== null) {
-      cancelAnimationFrame(scrollAnimationId)
-      scrollAnimationId = null
+      cancelAnimationFrame(scrollAnimationId);
+      scrollAnimationId = null;
     }
-    removeInterruptListeners()
-  }
+    removeInterruptListeners();
+  };
 
   const removeInterruptListeners = () => {
-    window.removeEventListener('wheel', cancelScroll, { passive: true })
-    window.removeEventListener('touchstart', cancelScroll, { passive: true })
-  }
+    window.removeEventListener("wheel", cancelScroll, { passive: true });
+    window.removeEventListener("touchstart", cancelScroll, { passive: true });
+  };
 
-  window.addEventListener('wheel', cancelScroll, { passive: true })
-  window.addEventListener('touchstart', cancelScroll, { passive: true })
+  window.addEventListener("wheel", cancelScroll, { passive: true });
+  window.addEventListener("touchstart", cancelScroll, { passive: true });
 
-  scrollAnimationId = requestAnimationFrame(animate)
-}
+  scrollAnimationId = requestAnimationFrame(animate);
+};
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll, { passive: true })
-  const html = document.documentElement
-  html.classList.add(userStore.$state.editorTheme)
-  isDark.value = html.classList.contains('dark')
-  console.log(isDark.value)
-})
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  const html = document.documentElement;
+  html.classList.add(userStore.$state.editorTheme);
+  isDark.value = html.classList.contains("dark");
+  console.log(isDark.value);
+});
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
+  window.removeEventListener("scroll", handleScroll);
+});
 
 const openModel = () => {
-  console.log('------------')
-  myModal.value.open()
-}
+  myModal.value.open();
+};
 
 // 切换主体颜色（直接修改html的类）
 const toggleTheme = () => {
-  const html = document.documentElement
-  const _isDark = html.classList.contains('dark')
+  const html = document.documentElement;
+  const _isDark = html.classList.contains("dark");
 
   if (_isDark) {
-    html.classList.remove('dark')
+    html.classList.remove("dark");
   }
-  isDark.value = !_isDark
+  isDark.value = !_isDark;
   playThemeTransition(!_isDark, () => {
     if (_isDark) {
       // 切换为亮色
-      userStore.setUser('light')
+      userStore.setUser("light");
     } else {
-      html.classList.add('dark') // 切换为暗黑
-      userStore.setUser('dark')
+      html.classList.add("dark"); // 切换为暗黑
+      userStore.setUser("dark");
     }
-  })
-}
+  });
+};
 </script>
 
 <style lang="css" scoped>
@@ -324,7 +342,7 @@ const toggleTheme = () => {
   overflow: hidden;
 }
 .backdrop::before {
-  content: '';
+  content: "";
   position: absolute;
   height: 10.5rem;
   width: 10.5rem;
@@ -333,7 +351,7 @@ const toggleTheme = () => {
   animation: rotate 1.5s linear infinite;
 }
 .backdrop::after {
-  content: '';
+  content: "";
   position: absolute;
   height: 100%;
   width: 100%;
@@ -417,7 +435,7 @@ const toggleTheme = () => {
 
 .action::after,
 .action-content::after {
-  content: '';
+  content: "";
   opacity: 0;
   position: absolute;
   border-radius: var(--rd-light-hover);

@@ -224,6 +224,62 @@ export function initCardHoverEffect() {
   })
 }
 
+export function initFlipCardEffect(): () => void {
+  const bindFlipCard = (card: HTMLElement) => {
+    if (card.dataset.flipBound === 'true') return
+
+    const tryBind = () => {
+      const inner = card.querySelector<HTMLElement>('.md-flip-card-inner')
+      if (!inner) {
+        setTimeout(tryBind, 50) // 继续等待 DOM 挂载完成
+        return
+      }
+
+      inner.addEventListener('click', () => {
+        const outer = inner.closest('.md-flip-card')
+        outer?.classList.toggle('flipped')
+      })
+
+      card.dataset.flipBound = 'true'
+    }
+
+    tryBind()
+  }
+
+  // 绑定已有
+  document.querySelectorAll<HTMLElement>('.md-flip-card').forEach(bindFlipCard)
+
+  // MutationObserver：监听后续插入
+  const mutationObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (!(node instanceof HTMLElement)) return
+
+        if (node.matches('.md-flip-card')) {
+          bindFlipCard(node)
+        } else {
+          node.querySelectorAll?.('.md-flip-card').forEach(bindFlipCard)
+        }
+      })
+    })
+  })
+
+  mutationObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  })
+
+  // 返回卸载函数，便于页面切换后清理
+  return () => {
+    mutationObserver.disconnect()
+    document.querySelectorAll<HTMLElement>('.md-flip-card').forEach((card) => {
+      if (card.dataset.flipBound === 'true') {
+        card.replaceWith(card.cloneNode(true)) // 解绑所有事件
+      }
+    })
+  }
+}
+
 // export function initHoverCard(container: HTMLElement | Document = document) {
 //     const showCard = (link: HTMLElement, card: HTMLElement) => {
 //         clearTimeout((card as any)._hideTimer);

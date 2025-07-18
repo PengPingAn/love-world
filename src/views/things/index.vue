@@ -15,7 +15,11 @@
         </div>
       </div>
     </div>
-    <div class="task text-[var(--font-color)]" draggable="true" v-for="item in thingsData">
+    <div
+      class="task text-[var(--font-color)]"
+      draggable="true"
+      v-for="item in thingsData"
+    >
       <!-- From Uiverse.io by LeonKohli -->
       <div class="uv-checkbox-wrapper">
         <input
@@ -50,7 +54,12 @@
               v-if="item.imgList && item.imgList.length > 0"
             >
               <div class="container-btn prev">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     fill="none"
                     stroke="#5b5b5b"
@@ -79,7 +88,12 @@
                 <span class="dot" v-for="dot in item.imgList"></span>
               </div>
               <div class="container-btn next">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     fill="none"
                     stroke="#5b5b5b"
@@ -100,7 +114,9 @@
                 </svg>
               </div>
             </div>
-            <div class="text-xl m-4 text-center" v-else>还在计划中呢~</div>
+            <div class="text-xl m-4 text-center" v-else style="color: var(--font-color)">
+              还在计划中呢~
+            </div>
           </div>
         </div>
       </div>
@@ -109,32 +125,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import svgDownLine from '@/assets/svg/down-line.svg?raw'
+import { ref } from "vue";
+import svgDownLine from "@/assets/svg/down-line.svg?raw";
 
 const thingsData = ref([
   {
     isDone: true,
-    doneTime: '2025年6月13日',
-    title: '一起旅行',
+    doneTime: "2025年6月13日",
+    title: "一起旅行",
     imgList: [
-      'https://pic4.zhimg.com/v2-57ed22547faf8635adb245964aee8a0b_r.jpg',
-      'https://www.2008php.com/2013_Website_appreciate/2013-03-17/20130317005445.jpg'
-    ]
+      "https://pic4.zhimg.com/v2-57ed22547faf8635adb245964aee8a0b_r.jpg",
+      "https://www.2008php.com/2013_Website_appreciate/2013-03-17/20130317005445.jpg",
+    ],
   },
   {
     isDone: true,
-    doneTime: '2023年12月13日',
-    title: '一起做饭',
-    imgList: ['https://pic4.zhimg.com/v2-57ed22547faf8635adb245964aee8a0b_r.jpg']
+    doneTime: "2023年12月13日",
+    title: "一起做饭",
+    imgList: ["https://pic4.zhimg.com/v2-57ed22547faf8635adb245964aee8a0b_r.jpg"],
   },
   {
     isDone: false,
     doneTime: null,
-    title: '一起去海边',
-    imgList: []
-  }
-])
+    title: "一起去海边",
+    imgList: [],
+  },
+]);
 </script>
 
 <style lang="scss" scoped>
@@ -304,7 +320,7 @@ const thingsData = ref([
   display: flex;
   justify-content: center;
 }
-.container-tab input[type='radio'] {
+.container-tab input[type="radio"] {
   display: none;
 }
 
@@ -320,7 +336,7 @@ const thingsData = ref([
   cursor: pointer;
   transition: color 0.15s ease-in;
   font-size: 1.2rem;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .notification {
@@ -340,25 +356,25 @@ const thingsData = ref([
   transition: 0.15s ease-in;
 }
 
-.container-tab input[type='radio']:checked + label {
+.container-tab input[type="radio"]:checked + label {
   color: #f661dd;
 }
 
-.container-tab input[type='radio']:checked + label > .notification {
+.container-tab input[type="radio"]:checked + label > .notification {
   background-color: #f661dd;
   color: #fff;
   margin: 0px;
 }
 
-.container-tab input[id='radio-1']:checked ~ .glider {
+.container-tab input[id="radio-1"]:checked ~ .glider {
   transform: translateX(0);
 }
 
-.container-tab input[id='radio-2']:checked ~ .glider {
+.container-tab input[id="radio-2"]:checked ~ .glider {
   transform: translateX(100%);
 }
 
-.container-tab input[id='radio-3']:checked ~ .glider {
+.container-tab input[id="radio-3"]:checked ~ .glider {
   transform: translateX(200%);
 }
 

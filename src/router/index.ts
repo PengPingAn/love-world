@@ -19,7 +19,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const loadingStore = useLoadingStore()
   loadingStore.start()
-  // await new Promise(resolve => setTimeout(resolve, 1000))
+  // await new Promise((resolve) => setTimeout(resolve, 1000))
   if (!router.hasRoute(to.name)) {
     next({ path: '/404' })
   } else {

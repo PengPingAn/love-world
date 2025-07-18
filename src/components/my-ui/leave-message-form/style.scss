@@ -1,0 +1,177 @@
+/* From Uiverse.io by LightAndy1 */
+.group {
+  display: flex;
+  line-height: 28px;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+.group::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 5px;
+  pointer-events: none;
+  z-index: 0;
+}
+.group:has(.input:focus)::after {
+  animation: pulse-ring 0.3s ease-out forwards;
+}
+
+.textarea {
+  font-family: 'Montserrat', sans-serif;
+  width: 100%;
+  height: 8rem;
+  padding: 1rem;
+  border: 0;
+  border-radius: 10px;
+  outline: none;
+  background: transparent;
+  transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1);
+  cursor: text;
+  z-index: 0;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #99999986;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #eee;
+  }
+}
+
+.input {
+  font-family: 'Montserrat', sans-serif;
+  width: 100%;
+  height: 30px;
+  padding: 1rem;
+  box-shadow:
+    0 0 0 1.5px #a5a7af3d,
+    0 0 25px -17px #a5a7af3d;
+  border: 0;
+  border-radius: 5px;
+  background-color: #a5a7af3d;
+  outline: none;
+  // color: #a5a7af;
+  transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1);
+  cursor: text;
+  z-index: 0;
+  font-size: 1rem;
+  color: var(--font-color);
+}
+
+.input:hover {
+  box-shadow:
+    0 0 0 2.5px #a5a7af3d,
+    0px 0px 25px -15px #a5a7af3d;
+}
+
+.input:focus {
+  box-shadow: 0 0 0 1px #3668f374;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 var(--input-border-rgba1);
+  }
+  100% {
+    box-shadow: 0 0 0 7px var(--input-border-rgba2);
+  }
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  fill: #a5a7af3d;
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* From Uiverse.io by alexmaracinaru */
+.cta {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.cta span {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #adafb0;
+}
+
+.cta svg {
+  // transform: translateX(-8px);
+  transition: all 0.3s ease;
+}
+
+.cta:hover svg {
+  transform: translateX(0);
+}
+
+.cta:active svg {
+  transform: scale(0.9);
+}
+
+.hover-underline-animation {
+  position: relative;
+  color: #adafb0;
+}
+
+.hover-underline-animation:after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #adafb0;
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.cta:hover .hover-underline-animation:after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* From Uiverse.io by WhiteNervosa */
+.send-button {
+  font-size: 18px;
+  // color: #e1e1e1;
+  font-family: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  position: relative;
+  border: none;
+  background: none;
+  text-transform: uppercase;
+  transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition-duration: 400ms;
+  transition-property: color;
+}
+
+.send-button:hover:after {
+  width: 100%;
+  left: 0%;
+}
+
+.send-button:after {
+  content: '';
+  pointer-events: none;
+  bottom: -2px;
+  left: 50%;
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background-color: #9c9393;
+  transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition-duration: 400ms;
+  transition-property: width, left;
+}

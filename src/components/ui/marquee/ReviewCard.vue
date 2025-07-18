@@ -11,17 +11,17 @@
         <p class="text-xs font-medium dark:text-white/40">{{ username }}</p>
       </div>
     </div>
-    <blockquote class="mt-2 text-sm text-[var(--font-color)]">{{ body }}</blockquote>
+    <div class="mt-2 text-sm text-[var(--font-color)]">{{ body }}</div>
   </figure>
 </template>
-  
-  <script lang="ts" setup>
+
+<script lang="ts" setup>
 interface Props {
-  img: string
-  name: string
-  username: string
-  body: string
+  img: string;
+  name: string;
+  username: string;
+  body: string;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 </script>

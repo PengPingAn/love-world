@@ -1,20 +1,18 @@
 <template>
-  <div
-    ref="containerRef"
-    :class="cn('w-full h-full', props.class)"
-  >
+  <div ref="containerRef" :class="cn('w-full h-full', props.class)">
     <canvas
       ref="canvasRef"
       class="pointer-events-none"
       :width="canvasSize.width"
       :height="canvasSize.height"
     />
+    <router-view />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { cn } from '@/lib/utils';
-import { ref, onMounted, onBeforeUnmount, toRefs, computed } from 'vue';
+import { cn } from "@/lib/utils";
+import { ref, onMounted, onBeforeUnmount, toRefs, computed } from "vue";
 
 interface FlickeringGridProps {
   squareSize?: number;
@@ -31,11 +29,13 @@ const props = withDefaults(defineProps<FlickeringGridProps>(), {
   squareSize: 4,
   gridGap: 6,
   flickerChance: 0.3,
-  color: 'rgb(0, 0, 0)',
+  color: "rgb(0, 0, 0)",
   maxOpacity: 0.3,
 });
 
-const { squareSize, gridGap, flickerChance, color, maxOpacity, width, height } = toRefs(props);
+const { squareSize, gridGap, flickerChance, color, maxOpacity, width, height } = toRefs(
+  props
+);
 
 const containerRef = ref<HTMLDivElement>();
 const canvasRef = ref<HTMLCanvasElement>();
@@ -45,9 +45,9 @@ const isInView = ref(false);
 const canvasSize = ref({ width: 0, height: 0 });
 
 const computedColor = computed(() => {
-  if (!context.value) return 'rgba(255, 0, 0,';
+  if (!context.value) return "rgba(255, 0, 0,";
 
-  const hex = color.value.replace(/^#/, '');
+  const hex = color.value.replace(/^#/, "");
   const bigint = Number.parseInt(hex, 16);
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
@@ -58,7 +58,7 @@ const computedColor = computed(() => {
 function setupCanvas(
   canvas: HTMLCanvasElement,
   width: number,
-  height: number,
+  height: number
 ): {
   cols: number;
   rows: number;
@@ -96,10 +96,10 @@ function drawGrid(
   cols: number,
   rows: number,
   squares: Float32Array,
-  dpr: number,
+  dpr: number
 ) {
   ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = 'transparent';
+  ctx.fillStyle = "transparent";
   ctx.fillRect(0, 0, width, height);
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
@@ -109,7 +109,7 @@ function drawGrid(
         i * (squareSize.value + gridGap.value) * dpr,
         j * (squareSize.value + gridGap.value) * dpr,
         squareSize.value * dpr,
-        squareSize.value * dpr,
+        squareSize.value * dpr
       );
     }
   }
@@ -144,14 +144,14 @@ function animate(time: number) {
     gridParams.value!.cols,
     gridParams.value!.rows,
     gridParams.value!.squares,
-    gridParams.value!.dpr,
+    gridParams.value!.dpr
   );
   animationFrameId = requestAnimationFrame(animate);
 }
 
 onMounted(() => {
   if (!canvasRef.value || !containerRef.value) return;
-  context.value = canvasRef.value.getContext('2d')!;
+  context.value = canvasRef.value.getContext("2d")!;
   if (!context.value) return;
 
   updateCanvasSize();
@@ -164,7 +164,7 @@ onMounted(() => {
       isInView.value = entry.isIntersecting;
       animationFrameId = requestAnimationFrame(animate);
     },
-    { threshold: 0 },
+    { threshold: 0 }
   );
 
   resizeObserver.observe(containerRef.value);

@@ -135,11 +135,6 @@ const timeDifference = ref({
 onMounted(() => {
   initializeStars()
   interval = window.setInterval(updateStars, 100)
-
-  timeDifference.value = calculateTimeDifference('2023-12-17 00:00:00')
-  setInterval(() => {
-    timeDifference.value = calculateTimeDifference('2023-12-17 00:00:00')
-  }, 1000)
 })
 
 // Cleanup on unmount
@@ -213,4 +208,9 @@ const calculateTimeDifference = (targetDateTime) => {
     seconds: seconds
   }
 }
+const init = (time: string) => {
+  timeDifference.value = calculateTimeDifference(time)
+}
+
+defineExpose({ init })
 </script>

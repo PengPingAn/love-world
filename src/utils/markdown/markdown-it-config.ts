@@ -8,6 +8,7 @@ import svgAlWarning from '@/assets/svg/alerts-warning.svg?raw'
 import svgAlError from '@/assets/svg/alerts-error.svg?raw'
 import svgAlNote from '@/assets/svg/alerts-note.svg?raw'
 import svgDownLine from '@/assets/svg/down-line.svg?raw'
+import svgFlip from '@/assets/svg/flip.svg?raw'
 
 // ----------------------------
 // 自定义语法插件
@@ -16,6 +17,7 @@ export const customPlugin = (md) => {
   // 安全边界计数器
   const MAX_ITERATIONS = 1000
   const TOKEN_PREFIX = 'my_admonition_'
+  const ALLOWED_TYPES = ['warning', 'error']
 
   // 1. 注册块级规则
   md.block.ruler.before('fence', 'admonition', (state, startLine) => {
@@ -31,6 +33,7 @@ export const customPlugin = (md) => {
     if (!openMatch) return false
 
     const [_, type, title] = openMatch
+    if (!ALLOWED_TYPES.includes(type)) return false // 只允许 warning 和 error
     let endLine = startLine + 1
     let iteration = 0
     let foundEnd = false
@@ -118,6 +121,49 @@ export const customPlugin = (md) => {
     return true
   })
 
+  //文字翻转
+  md.block.ruler.before('fence', 'textflip', (state, startLine, endLine, silent) => {
+    const start = state.bMarks[startLine] + state.tShift[startLine]
+    const max = state.eMarks[startLine]
+    const line = state.src.slice(start, max)
+
+    if (!line.startsWith(':::textflip')) return false
+
+    const titleMatch = line.match(/title=(.*)/)
+    const title = titleMatch ? titleMatch[1].trim() : '展开内容'
+
+    let nextLine = startLine + 1
+    let content = ''
+
+    while (nextLine < endLine) {
+      const pos = state.bMarks[nextLine] + state.tShift[nextLine]
+      const maxPos = state.eMarks[nextLine]
+      const lineText = state.src.slice(pos, maxPos)
+
+      if (lineText.startsWith(':::')) break
+
+      content += lineText + '\n'
+      nextLine++
+    }
+
+    if (silent) return true
+    state.line = nextLine + 1
+
+    const renderedContent = md.renderInline(content.trim())
+
+    const token = state.push('html_block', '', 0)
+    token.content = `
+      <div class="md-flip-card">
+        <div class="md-flip-card-inner">
+          <div class="md-flip-card-front">${title}<div style="transform: rotateX(180deg);">${svgFlip}</div></div>
+          <div class="md-flip-card-back">${renderedContent}<div>${svgFlip}</div></div>
+
+        </div>
+      </div>
+    `
+    return true
+  })
+
   //视频插件
   md.block.ruler.before('fence', 'video', (state, startLine, endLine, silent) => {
     const start = state.bMarks[startLine] + state.tShift[startLine]
@@ -177,7 +223,13 @@ export const customPlugin = (md) => {
     const html = `
           <div class="md-video-wrapper">
             ${player}
-            ${description ? `<div class="md-video-description">—— ${md.utils.escapeHtml(description)} ——</div>` : ''}
+            ${
+              description
+                ? `<div class="md-video-description">—— ${md.utils.escapeHtml(
+                    description
+                  )} ——</div>`
+                : ''
+            }
           </div>
         `
 
@@ -243,9 +295,17 @@ export const customPlugin = (md) => {
 
     const html = `
           <a class="m-card" href="${url}" target="_blank" rel="noopener noreferrer">
-            ${image ? `<div class="m-card-cover" style="background-image: url('${image}')"></div>` : ''}
+            ${
+              image
+                ? `<div class="m-card-cover" style="background-image: url('${image}')"></div>`
+                : ''
+            }
             <div class="m-card-content">
-              ${title ? `<div class="m-card-title-row"><div class="m-card-title">${title}</div></div>` : ''}
+              ${
+                title
+                  ? `<div class="m-card-title-row"><div class="m-card-title">${title}</div></div>`
+                  : ''
+              }
               ${desc ? `<div class="m-card-desc">${desc}</div>` : ''}
             </div>
             <div class="m-card-overlay"></div>
@@ -254,6 +314,48 @@ export const customPlugin = (md) => {
 
     const token = state.push('html_block', '', 0)
     token.content = html
+
+    return true
+  })
+
+  //设置字体大小 单位px
+  md.inline.ruler.before('emphasis', 'font_size', (state, silent) => {
+    const start = state.pos
+    const src = state.src.slice(start)
+
+    const prefixMatch = src.match(/^@size\[(\d+px)\]\{/)
+    if (!prefixMatch) return false
+
+    const fontSize = prefixMatch[1]
+    let i = prefixMatch[0].length
+    let braceLevel = 1
+    let content = ''
+    while (i < src.length) {
+      const char = src[i]
+      if (char === '{') braceLevel++
+      else if (char === '}') braceLevel--
+      if (braceLevel === 0) break
+      content += char
+      i++
+    }
+
+    if (braceLevel !== 0) return false // 没有正确闭合
+
+    if (silent) return true
+
+    // 开始生成 tokens
+    const tokenOpen = state.push('font_size_open', 'span', 1)
+    tokenOpen.attrs = [['style', `font-size:${fontSize}`]]
+
+    const innerState = new state.md.inline.State(content, state.md, state.env, [])
+    innerState.md.inline.tokenize(innerState)
+    for (const t of innerState.tokens) {
+      state.tokens.push(t)
+    }
+
+    const tokenClose = state.push('font_size_close', 'span', -1)
+
+    state.pos += prefixMatch[0].length + content.length + 1 // +1 for final }
 
     return true
   })
@@ -299,14 +401,58 @@ export const customPlugin = (md) => {
     const body = md.utils.escapeHtml(contentLines.join('\n'))
 
     const html = `
-          <div class="m-admonition alerts-${type}">
-            <div class="m-admonition-title">
-              <span class="m-admonition-icon">${icon}</span>
-              <span class="m-admonition-label">${title}</span>
-            </div>
-            <div class="m-admonition-body">${md.renderInline(body)}</div>
-          </div>
-          `
+      <div class="m-admonition alerts-${type}">
+        <div class="m-admonition-title">
+          <span class="m-admonition-icon">${icon}</span>
+          <span class="m-admonition-label">${title}</span>
+        </div>
+        <div class="m-admonition-body">${md.renderInline(body)}</div>
+      </div>
+      `
+
+    const token = state.push('html_block', '', 0)
+    token.content = html
+
+    return true
+  })
+
+  //有背景颜色的引用
+  md.block.ruler.before('fence', 'quotation', (state, startLine, endLine, silent) => {
+    const start = state.bMarks[startLine] + state.tShift[startLine]
+    const max = state.eMarks[startLine]
+    const marker = state.src.slice(start, max).trim()
+
+    // ✅ 匹配 ::: quotation color[#xxxxxx]（color 参数可选）
+    const match = marker.match(/^::: *quotation(?: +color\[(#[0-9a-fA-F]{3,6})\])?/)
+    if (!match) return false
+
+    const bgColor = match[1] // 提取 color 参数（可能是 undefined）
+
+    let nextLine = startLine + 1
+    const contentLines: string[] = []
+
+    while (nextLine < endLine) {
+      const lineStart = state.bMarks[nextLine] + state.tShift[nextLine]
+      const lineEnd = state.eMarks[nextLine]
+      const lineText = state.src.slice(lineStart, lineEnd).trim()
+
+      // 结束条件（遇到 :::）
+      if (lineText === ':::' || lineText.startsWith('::: ')) break
+
+      contentLines.push(lineText)
+      nextLine++
+    }
+
+    if (silent) return true
+    state.line = nextLine + 1
+
+    const body = md.utils.escapeHtml(contentLines.join('\n'))
+
+    const html = `
+    <div class="custom-quotation"${bgColor ? ` style="background-color: ${bgColor};"` : ''}>
+      <div class="quotation-body">${md.renderInline(body)}</div>
+    </div>
+  `
 
     const token = state.push('html_block', '', 0)
     token.content = html
@@ -497,13 +643,12 @@ export const customPlugin = (md) => {
   md.renderer.rules.polaris_link = (tokens, idx) => {
     const token = tokens[idx]
     return `<span style="display: inline-block;text-indent: 0em;">
-                <a href="${token.attrs[0][1]}" target="_blank" class='hover-link' style='text-decoration: none;display: flex;'>
-                    ${token.content}
-                    <span class="polaris-icon"></span>
-                    
-                </a>
-                <span class='p-a-span slide-top'>${token.meta.url}</span>
-            </span>`
+                    <a href="${token.attrs[0][1]}" target="_blank" class='hover-link' style='text-decoration: none;display: flex;'>
+                        ${token.content}
+                        <img src="${token.meta.icon}" style='width:17px;vertical-align: sub;pointer-events: none;background: transparent;' />
+                    </a>
+                    <span class='p-a-span slide-top'>${token.meta.url}</span>
+                </span>`
   }
 
   //警告/错误渲染
@@ -527,7 +672,14 @@ export const customPlugin = (md) => {
     const escapeHtml = (str) =>
       String(str).replace(
         /[&<>"']/g,
-        (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]
+        (m) =>
+          ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+          })[m]
       )
 
     const safeTitle = escapeHtml(title)
@@ -543,7 +695,7 @@ export const customPlugin = (md) => {
                         <p class="link-title">${safeTitle}</p>
                         <p class="link-url">${safeLabel}</p>
                     </a>
-                    <div class="link-avatar" 
+                    <div class="link-avatar"
                             style="background-image: url('${safeAvatar}')"
                             onerror="this.style.backgroundImage='none'">
                     </div>
@@ -556,7 +708,9 @@ export const customPlugin = (md) => {
   md.renderer.rules.carousel_open = (tokens, idx) => {
     const token = tokens[idx]
     const classAttr = token.attrs?.find((attr) => attr[0] === 'class')
-    return `<div class="carousel-wrapper"> <div class="container-btn prev">${svgLeft}</div><div class="${classAttr ? classAttr[1] : ''}">\n
+    return `<div class="carousel-wrapper"> <div class="container-btn prev">${svgLeft}</div><div class="${
+      classAttr ? classAttr[1] : ''
+    }">\n
         `
   }
   // md.renderer.rules.carousel_close = () => `</div><div class="container-btn next">${svgRight}</div></div>\n`;
@@ -580,4 +734,525 @@ export const customPlugin = (md) => {
     return `<div class="${classAttr ? classAttr[1] : ''}">`
   }
   md.renderer.rules.container_item_close = () => ` </div>`
+
+  //字体大小渲染
+  md.renderer.rules.font_size_open = (tokens, idx) => {
+    const attrs = tokens[idx].attrs || []
+    const styleAttr = attrs.map(([k, v]) => `${k}="${v}"`).join(' ')
+    return `<span ${styleAttr}>`
+  }
+  md.renderer.rules.font_size_close = () => `</span>`
 }
+
+// export const customPlugin = (md) => {
+//   // ====== 通用配置 ======
+//   const MAX_ITERATIONS = 1000
+//   const TOKEN_PREFIX = 'my_admonition_'
+
+//   // ====== 1. 块级语法规则注册 ======
+//   // 1.1 :::admonition 警告块
+//   md.block.ruler.before('fence', 'admonition', (state, startLine) => {
+//     if (startLine >= state.lineMax) return false
+
+//     const startPos = state.bMarks[startLine]
+//     const maxPos = state.eMarks[startLine]
+//     const lineText = state.src.slice(startPos, maxPos)
+
+//     const openMatch = lineText.match(/^:::\s+(\w+)(?:\s+(.*))?$/)
+//     if (!openMatch) return false
+
+//     const [_, type, title] = openMatch
+//     let endLine = startLine + 1
+//     let iteration = 0
+//     let foundEnd = false
+
+//     while (endLine < state.lineMax && iteration < MAX_ITERATIONS) {
+//       iteration++
+//       const endLineText = state.src.slice(state.bMarks[endLine], state.eMarks[endLine])
+//       if (endLineText.trim() === ':::') {
+//         foundEnd = true
+//         break
+//       }
+//       endLine++
+//     }
+
+//     if (!foundEnd) return false
+
+//     const tokenOpen = state.push(`${TOKEN_PREFIX}open`, 'div', 1)
+//     tokenOpen.attrSet('class', `${type} m-block`)
+
+//     if (title) {
+//       const tokenTitle = state.push(`${TOKEN_PREFIX}title`, '', 0)
+//       tokenTitle.content = title.trim()
+//     }
+
+//     state.line = startLine + 1
+//     state.md.block.tokenize(state, startLine + 1, endLine)
+//     state.push(`${TOKEN_PREFIX}close`, 'div', -1)
+
+//     state.line = endLine + 1
+//     return true
+//   })
+
+//   // 1.2 :::collapse 折叠块
+//   md.block.ruler.before('fence', 'collapse', (state, startLine, endLine, silent) => {
+//     const start = state.bMarks[startLine] + state.tShift[startLine]
+//     const max = state.eMarks[startLine]
+//     const line = state.src.slice(start, max)
+
+//     if (!line.startsWith(':::collapse')) return false
+
+//     const titleMatch = line.match(/title=(.*)/)
+//     const title = titleMatch ? titleMatch[1].trim() : '展开内容'
+
+//     let nextLine = startLine + 1
+//     let content = ''
+
+//     while (nextLine < endLine) {
+//       const pos = state.bMarks[nextLine] + state.tShift[nextLine]
+//       const maxPos = state.eMarks[nextLine]
+//       const lineText = state.src.slice(pos, maxPos)
+
+//       if (lineText.startsWith(':::')) break
+
+//       content += lineText + '\n'
+//       nextLine++
+//     }
+
+//     if (silent) return true
+
+//     state.line = nextLine + 1
+
+//     const renderedContent = md.render(content)
+
+//     const token = state.push('html_block', '', 0)
+//     token.content = `
+//       <div class="md-collapse">
+//         <div class="md-collapse-title"><div class='md-collapse-icon'></div>${title}</div>
+//         <div class="md-collapse-body">
+//           <div class="md-collapse-inner open">${renderedContent}</div>
+//         </div>
+//       </div>
+//     `
+
+//     return true
+//   })
+
+//   // 1.3 :::textflip 文字翻转块
+//   md.block.ruler.before('fence', 'textflip', (state, startLine, endLine, silent) => {
+//     const start = state.bMarks[startLine] + state.tShift[startLine]
+//     const max = state.eMarks[startLine]
+//     const line = state.src.slice(start, max)
+
+//     if (!line.startsWith(':::textflip')) return false
+
+//     const titleMatch = line.match(/title=(.*)/)
+//     const title = titleMatch ? titleMatch[1].trim() : '展开内容'
+
+//     let nextLine = startLine + 1
+//     let content = ''
+
+//     while (nextLine < endLine) {
+//       const pos = state.bMarks[nextLine] + state.tShift[nextLine]
+//       const maxPos = state.eMarks[nextLine]
+//       const lineText = state.src.slice(pos, maxPos)
+
+//       if (lineText.startsWith(':::')) break
+
+//       content += lineText + '\n'
+//       nextLine++
+//     }
+
+//     if (silent) return true
+
+//     state.line = nextLine + 1
+
+//     const renderedContent = md.renderInline(content.trim())
+
+//     const token = state.push('html_block', '', 0)
+//     token.content = `
+//       <div class="md-flip-card">
+//         <div class="md-flip-card-inner">
+//           <div class="md-flip-card-front">${title}<div style="transform: rotateX(180deg);">${svgFlip}</div></div>
+//           <div class="md-flip-card-back">${renderedContent}<div>${svgFlip}</div></div>
+//         </div>
+//       </div>
+//     `
+
+//     return true
+//   })
+
+//   // 1.4 :::video 视频块
+//   md.block.ruler.before('fence', 'video', (state, startLine, endLine, silent) => {
+//     const start = state.bMarks[startLine] + state.tShift[startLine]
+//     const max = state.eMarks[startLine]
+//     const line = state.src.slice(start, max).trim()
+
+//     if (!line.startsWith(':::video')) return false
+
+//     const attrRegex = /(\w+)=([^\s]+)/g
+//     const attrs = {}
+//     let match
+//     while ((match = attrRegex.exec(line)) !== null) {
+//       attrs[match[1]] = match[2]
+//     }
+
+//     if (!attrs.src) return false
+
+//     let nextLine = startLine + 1
+//     const lines = []
+//     while (nextLine < endLine) {
+//       const pos = state.bMarks[nextLine] + state.tShift[nextLine]
+//       const maxPos = state.eMarks[nextLine]
+//       const text = state.src.slice(pos, maxPos).trim()
+
+//       if (text === ':::') break
+
+//       lines.push(text)
+//       nextLine++
+//     }
+
+//     if (silent) return true
+
+//     state.line = nextLine + 1
+
+//     const description = lines.join('\n').trim()
+
+//     const isExternal =
+//       /^https?:\/\//.test(attrs.src) && /(youtube\.com|bilibili\.com|vimeo\.com)/.test(attrs.src)
+
+//     const player = isExternal
+//       ? `<iframe
+//            src="${attrs.src}"
+//            class="md-video-iframe"
+//            frameborder="0"
+//            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+//            allowfullscreen
+//          ></iframe>`
+//       : `<video
+//            src="${attrs.src}"
+//            ${attrs.poster ? `poster="${attrs.poster}"` : ''}
+//            controls
+//            preload="metadata"
+//            class="md-video"
+//          ></video>`
+
+//     const html = `
+//         <div class="md-video-wrapper">
+//           ${player}
+//           ${
+//             description
+//               ? `<div class="md-video-description">—— ${md.utils.escapeHtml(description)} ——</div>`
+//               : ''
+//           }
+//         </div>
+//       `
+
+//     const token = state.push('html_block', '', 0)
+//     token.content = html
+
+//     return true
+//   })
+
+//   // 1.5 :::card 电影卡片块
+//   md.block.ruler.before('fence', 'card', (state, startLine, endLine, silent) => {
+//     const start = state.bMarks[startLine] + state.tShift[startLine]
+//     const max = state.eMarks[startLine]
+//     const line = state.src.slice(start, max).trim()
+
+//     if (!line.startsWith(':::card')) return false
+
+//     const attrRegex = /(\w+)=("[^"]+"|'[^']+'|[^\s]+)/g
+//     const attrs = {}
+//     let match
+//     while ((match = attrRegex.exec(line)) !== null) {
+//       let value = match[2]
+//       if (
+//         (value.startsWith('"') && value.endsWith('"')) ||
+//         (value.startsWith("'") && value.endsWith("'"))
+//       ) {
+//         value = value.slice(1, -1)
+//       }
+//       attrs[match[1]] = value
+//     }
+
+//     if (!attrs.url) return false
+
+//     let nextLine = startLine + 1
+//     const lines = []
+
+//     while (nextLine < endLine) {
+//       const pos = state.bMarks[nextLine] + state.tShift[nextLine]
+//       const maxPos = state.eMarks[nextLine]
+//       const text = state.src.slice(pos, maxPos).trim()
+//       if (text === ':::') break
+//       lines.push(text)
+//       nextLine++
+//     }
+
+//     if (silent) return true
+
+//     state.line = nextLine + 1
+
+//     const url = md.utils.escapeHtml(attrs.url)
+//     const title = md.utils.escapeHtml(attrs.title || '')
+//     const image = md.utils.escapeHtml(attrs.image || '')
+//     const desc = md.utils.escapeHtml(lines.join('\n').trim())
+
+//     let ratingNum = 0
+//     if (attrs.rating) {
+//       const r = Number(attrs.rating)
+//       if (!isNaN(r) && r >= 1 && r <= 10) {
+//         ratingNum = r
+//       }
+//     }
+
+//     const html = `
+//         <a class="m-card" href="${url}" target="_blank" rel="noopener noreferrer">
+//           ${
+//             image
+//               ? `<div class="m-card-cover" style="background-image: url('${image}')"></div>`
+//               : ''
+//           }
+//           <div class="m-card-content">
+//             ${
+//               title
+//                 ? `<div class="m-card-title-row"><div class="m-card-title">${title}</div></div>`
+//                 : ''
+//             }
+//             ${desc ? `<div class="m-card-desc">${desc}</div>` : ''}
+//           </div>
+//           <div class="m-card-overlay"></div>
+//         </a>
+//       `
+
+//     const token = state.push('html_block', '', 0)
+//     token.content = html
+
+//     return true
+//   })
+
+//   // ====== 2. 内联语法规则注册 ======
+
+//   // 2.1 字体大小 @size[20px]{内容}
+//   md.inline.ruler.before('emphasis', 'font_size', (state, silent) => {
+//     const start = state.pos
+//     const src = state.src.slice(start)
+
+//     const prefixMatch = src.match(/^@size\[(\d+px)\]\{/)
+//     if (!prefixMatch) return false
+
+//     const fontSize = prefixMatch[1]
+//     let i = prefixMatch[0].length
+//     let braceLevel = 1
+//     let content = ''
+
+//     while (i < src.length) {
+//       const char = src[i]
+//       if (char === '{') braceLevel++
+//       else if (char === '}') braceLevel--
+//       if (braceLevel === 0) break
+//       content += char
+//       i++
+//     }
+
+//     if (braceLevel !== 0) return false
+//     if (silent) return true
+
+//     const tokenOpen = state.push('font_size_open', 'span', 1)
+//     tokenOpen.attrs = [['style', `font-size:${fontSize}`]]
+
+//     const innerState = new state.md.inline.State(content, state.md, state.env, [])
+//     innerState.md.inline.tokenize(innerState)
+//     state.tokens.push(...innerState.tokens)
+
+//     const tokenClose = state.push('font_size_close', 'span', -1)
+//     state.pos += prefixMatch[0].length + content.length + 1 // +1 for final }
+
+//     return true
+//   })
+
+//   // 2.2 高亮 ==内容==
+//   md.inline.ruler.before('text', 'highlight', (state) => {
+//     const start = state.pos
+//     const match = state.src.slice(start).match(/^==([^=]+?)==/)
+//     if (!match) return false
+
+//     const token = state.push('highlight', '', 0)
+//     token.content = match[1]
+//     token.attrs = [['class', 'mark']]
+
+//     state.pos += match[0].length
+//     return true
+//   })
+
+//   // 2.3 悬浮链接 @Pingan[text](url)
+//   md.inline.ruler.before('link', 'polaris_link', (state) => {
+//     const start = state.pos
+//     const srcSlice = state.src.slice(start)
+
+//     const match = srcSlice.match(/@Pingan\[([^\]]+)\]\(([^)]+)\)/)
+//     if (!match) return false
+
+//     const text = match[1]
+//     const url = match[2]
+
+//     const token = state.push('polaris_link', '', 0)
+//     token.attrs = [
+//       ['href', url],
+//       ['class', 'hover-link'],
+//       ['target', '_blank']
+//     ]
+//     token.content = text
+//     token.meta = {
+//       icon: mingcuteIcon,
+//       url: url
+//     }
+//     token.hidden = true
+
+//     state.pos += match[0].length
+//     return true
+//   })
+
+//   // 2.4 卡片链接 @linkCard[标题][头像][描述](链接)
+//   md.inline.ruler.before('link', 'link_card', (state) => {
+//     const start = state.pos
+//     const srcSlice = state.src.slice(start)
+
+//     const match = srcSlice.match(/@linkCard\s*\[([^\]]+)\]\[([^\]]+)\]\[([^\]]+)\]\(([^)]+)\)/)
+//     if (!match) return false
+
+//     const title = match[1]
+//     const avatar = match[2]
+//     const label = match[3]
+//     const url = match[4]
+
+//     const token = state.push('link_card', '', 0)
+//     token.meta = { title, avatar, label, url }
+//     token.hidden = true
+
+//     state.pos += match[0].length
+//     return true
+//   })
+
+//   // ====== 3. Blockquote NOTE 扩展 ======
+//   md.block.ruler.before('blockquote', 'admonition', (state, startLine, endLine, silent) => {
+//     const start = state.bMarks[startLine] + state.tShift[startLine]
+//     const max = state.eMarks[startLine]
+//     const line = state.src.slice(start, max).trim()
+
+//     const match = line.match(/^> \[!(\w+)]\s*$/)
+//     if (!match) return false
+
+//     const type = match[1].toLowerCase()
+//     const titleMap = {
+//       note: 'Note',
+//       warning: 'Warning',
+//       danger: 'Danger'
+//     }
+//     const iconMap = {
+//       note: svgAlNote,
+//       warning: svgAlWarning,
+//       danger: svgAlError
+//     }
+
+//     let nextLine = startLine + 1
+//     const contentLines = []
+
+//     while (nextLine < endLine) {
+//       const pos = state.bMarks[nextLine] + state.tShift[nextLine]
+//       const maxPos = state.eMarks[nextLine]
+//       const text = state.src.slice(pos, maxPos).trim()
+//       if (!text.startsWith('>')) break
+//       contentLines.push(text.replace(/^>\s?/, ''))
+//       nextLine++
+//     }
+
+//     if (silent) return true
+//     state.line = nextLine
+
+//     const title = titleMap[type] || 'Note'
+//     const icon = iconMap[type] || 'ℹ️'
+//     const body = md.utils.escapeHtml(contentLines.join('\n'))
+
+//     const html = `
+//     <div class="m-admonition alerts-${type}">
+//       <div class="m-admonition-title">
+//         <span class="m-admonition-icon">${icon}</span>
+//         <span class="m-admonition-label">${title}</span>
+//       </div>
+//       <div class="m-admonition-body">${md.renderInline(body)}</div>
+//     </div>
+//     `
+
+//     const token = state.push('html_block', '', 0)
+//     token.content = html
+
+//     return true
+//   })
+
+//   // ====== 4. 语法渲染器分离 ======
+
+//   // 字体大小渲染
+//   md.renderer.rules.font_size_open = (tokens, idx) => {
+//     const attrs = tokens[idx].attrs || []
+//     const styleAttr = attrs.map(([k, v]) => `${k}="${v}"`).join(' ')
+//     return `<span ${styleAttr}>`
+//   }
+//   md.renderer.rules.font_size_close = () => `</span>`
+
+//   // 高亮渲染
+//   md.renderer.rules.highlight = (tokens, idx) => {
+//     const token = tokens[idx]
+//     return `<mark class="${token.attrs[0][1]}"><span class="mark-span">${token.content}</span></mark>`
+//   }
+
+//   // 悬浮链接渲染
+//   md.renderer.rules.polaris_link = (tokens, idx) => {
+//     const token = tokens[idx]
+//     return `
+//       <span style="display: inline-block; text-indent: 0em;">
+//         <a href="${token.attrs[0][1]}" target="_blank" class='hover-link' style='text-decoration: none; display: flex;'>
+//           ${token.content}
+//           <img src="${token.meta.icon}" style='width:17px; vertical-align: sub; pointer-events: none; background: transparent;' />
+//         </a>
+//         <span class='p-a-span slide-top'>${token.meta.url}</span>
+//       </span>`
+//   }
+
+//   // 卡片链接渲染
+//   md.renderer.rules.link_card = (tokens, idx) => {
+//     const { title, avatar, label, url } = tokens[idx].meta
+
+//     const escapeHtml = (str) =>
+//       String(str).replace(
+//         /[&<>"']/g,
+//         (m) =>
+//           ({
+//             '&': '&amp;',
+//             '<': '&lt;',
+//             '>': '&gt;',
+//             '"': '&quot;',
+//             "'": '&#39;'
+//           })[m]
+//       )
+
+//     const safeTitle = escapeHtml(title)
+//     const safeAvatar = escapeHtml(avatar)
+//     const safeLabel = escapeHtml(label)
+//     const safeUrl = escapeHtml(url)
+
+//     return `
+//       <div class="link-card-container">
+//         <div class="link-card">
+//           <a href="${safeUrl}" target="_blank" class="link-content">
+//             <p class="link-title">${safeTitle}</p>
+//             <p class="link-url">${safeLabel}</p>
+//           </a>
+//           <div class="link-avatar" style="background-image: url('${safeAvatar}');"></div>
+//         </div>
+//       </div>`
+//   }
+
+//   // TODO: 你可继续补充其他渲染器规则
+// }

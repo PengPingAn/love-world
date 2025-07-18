@@ -3,6 +3,7 @@
     v-if="loadingStore.isLoading"
     :class="{ 'h-screen': !isFull }"
     class="flex justify-center items-center flex-col top-0 fixed w-full bg-[#cecece70]"
+    style="z-index: 111"
   >
     <!-- From Uiverse.io by bhaveshxrawat -->
     <section
@@ -60,4 +61,3 @@ index.value = Math.floor(Math.random() * 6)
   }
 }
 </style>
-@/stores/pinia

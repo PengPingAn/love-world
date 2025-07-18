@@ -1,49 +1,49 @@
 <template>
-  <div class="mx-auto max-w-sm px-4 py-20 font-sans antialiased lg:px-12 md:max-w-4xl md:px-8">
-    <div class="relative grid grid-cols-1 gap-20 md:grid-cols-2">
+  <div class="mx-auto max-w-sm font-sans antialiased md:max-w-4xl">
+    <div class="relative grid grid-cols-1 gap-8 md:grid-cols-2">
       <div>
         <div class="relative h-80 w-full">
-          <AnimatePresence>
-            <Motion
-              v-for="(testimonial, index) in props.testimonials"
-              :key="testimonial.image"
-              as="div"
-              :initial="{
-                opacity: 0,
-                scale: 0.9,
-                z: -100,
-                rotate: randomRotateY()
-              }"
-              :animate="{
-                opacity: isActive(index) ? 1 : 0.7,
-                scale: isActive(index) ? 1 : 0.95,
-                z: isActive(index) ? 0 : -100,
-                rotate: isActive(index) ? 0 : randomRotateY(),
-                zIndex: isActive(index) ? 40 : testimonials.length + 2 - index,
-                y: isActive(index) ? [0, -80, 0] : 0
-              }"
-              :exit="{
-                opacity: 0,
-                scale: 0.9,
-                z: 100,
-                rotate: randomRotateY()
-              }"
-              :transition="{
-                duration: 0.4,
-                ease: 'easeInOut'
-              }"
-              class="absolute inset-0 origin-bottom"
-            >
-              <img
-                :src="testimonial.image"
-                :alt="testimonial.name"
-                width="500"
-                height="500"
-                :draggable="false"
-                class="size-full rounded-3xl object-cover object-center"
-              />
-            </Motion>
-          </AnimatePresence>
+          <!-- <AnimatePresence> -->
+          <Motion
+            v-for="(testimonial, index) in props.testimonials"
+            :key="testimonial.imgUrl"
+            as="div"
+            :initial="{
+              opacity: 0,
+              scale: 0.9,
+              z: -100,
+              rotate: randomRotateY()
+            }"
+            :animate="{
+              opacity: isActive(index) ? 1 : 0.7,
+              scale: isActive(index) ? 1 : 0.95,
+              z: isActive(index) ? 0 : -100,
+              rotate: isActive(index) ? 0 : randomRotateY(),
+              zIndex: isActive(index) ? 40 : testimonials.length + 2 - index,
+              y: isActive(index) ? [0, -80, 0] : 0
+            }"
+            :exit="{
+              opacity: 0,
+              scale: 0.9,
+              z: 100,
+              rotate: randomRotateY()
+            }"
+            :transition="{
+              duration: 0.4,
+              ease: 'easeInOut'
+            }"
+            class="absolute inset-0 origin-bottom w-full max-w-[300px] max-h-[270px] mx-auto md:mx-0"
+          >
+            <img
+              :src="testimonial.imgUrl"
+              :alt="testimonial.nikeName"
+              width="500"
+              height="500"
+              :draggable="false"
+              class="size-full rounded-3xl object-cover object-center w-full h-full object-cover rounded-2xl"
+            />
+          </Motion>
+          <!-- </AnimatePresence> -->
         </div>
       </div>
       <div class="flex flex-col justify-between py-4">
@@ -68,10 +68,10 @@
           }"
         >
           <h3 class="text-2xl font-bold text-black dark:text-white">
-            {{ props.testimonials[active].name }}
+            {{ props.testimonials[active].nikeName }}
           </h3>
           <p class="text-sm text-gray-500 dark:text-neutral-500">
-            {{ props.testimonials[active].designation }}
+            {{ props.testimonials[active].signature }}
           </p>
           <Motion as="p" class="mt-8 text-lg text-gray-500 dark:text-neutral-300">
             <Motion
@@ -126,7 +126,7 @@
 
       <div
         style="z-index: -1"
-        class="absolute left-5 bottom-[-3rem] left-[-2rem] w-[150px] h-[150px] rounded-full bg-blue-500 filter blur-[50px]"
+        class="absolute left-5 bottom-[0rem] left-[-2.5rem] w-[150px] h-[150px] rounded-full bg-blue-500 filter blur-[50px]"
       ></div>
     </div>
   </div>
@@ -140,10 +140,10 @@ import { Icon, iconLoaded } from '@iconify/vue'
 const icon = 'bi:arrow-left'
 console.log(`Is ${icon} available?`, iconLoaded(icon) ? 'yes' : 'no')
 interface Testimonial {
-  quote: string
-  name: string
-  designation: string
-  image: string
+  intro: string
+  nikeName: string
+  signature: string
+  imgUrl: string
 }
 interface Props {
   testimonials?: Testimonial[]
@@ -163,7 +163,7 @@ const active = ref(0)
 const interval = ref<any>()
 
 const activeTestimonialQuote = computed(() => {
-  return props.testimonials[active.value].quote.split(' ')
+  return props.testimonials[active.value].intro.split(' ')
 })
 
 onMounted(() => {
@@ -190,7 +190,8 @@ function isActive(index: number) {
   return active.value === index
 }
 
+let rotateY = 7
 function randomRotateY() {
-  return Math.floor(Math.random() * 21) - 10
+  return (rotateY = -rotateY) //Math.floor(Math.random() * 21) - 10;
 }
 </script>

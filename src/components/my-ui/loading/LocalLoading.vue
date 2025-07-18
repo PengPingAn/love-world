@@ -1,8 +1,8 @@
 <template>
   <div
     class="my-loading"
-    :style="{ height: props.isMaxHeight ? '100vh' : 'auto' }"
-    v-show="props.loading"
+    :style="{ height: loadingStore.isMaxHeight ? '100vh' : 'auto' }"
+    v-if="loadingStore.isLoading2"
   >
     <img src="/src/assets/svg/awaitIcon.svg" alt="Await Icon" style="width: 40px" />
     <div style="width: 100%; text-align: center; margin: 30px" class="text-[var(--font-color)]">
@@ -13,7 +13,9 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useLoadingStore } from '@/stores/pinia'
 
+const loadingStore = useLoadingStore()
 const props = defineProps({
   loading: {
     type: Boolean,
@@ -52,6 +54,8 @@ index.value = Math.floor(Math.random() * 6)
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+  position: fixed;
+  background: var(--foot-bg-color);
   /* padding: 50px; */
 }
 

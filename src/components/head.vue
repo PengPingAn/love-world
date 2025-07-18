@@ -13,7 +13,9 @@
       </button>
     </div>
     <div class="m-auto">
-      <Signature :loading="loading" />
+      <div style="cursor: pointer" @click="jumpClick">
+        <Signature :loading="loading" />
+      </div>
     </div>
     <div>
       <Tooltip :socketCount="props.socketCount" :socketStatus="props.socketStatus" />
@@ -41,6 +43,8 @@ const props = withDefaults(
 const loading = ref(true);
 const router = useRouter();
 const route = useRoute();
+let clickTimer = null;
+let clickCount = 0;
 
 // 定义主页路径（根据实际路由配置修改）
 const HOME_PATH = "/";
@@ -70,6 +74,20 @@ const handleGoBack = () => {
     // 没有历史记录时直接跳转主页
     router.push(HOME_PATH);
   }
+};
+
+const jumpClick = () => {
+  clickCount++;
+  clearTimeout(clickTimer);
+
+  clickTimer = setTimeout(() => {
+    if (clickCount === 1) {
+      router.push("/");
+    } else if (clickCount === 2) {
+      router.push("/login");
+    }
+    clickCount = 0;
+  }, 250);
 };
 </script>
 

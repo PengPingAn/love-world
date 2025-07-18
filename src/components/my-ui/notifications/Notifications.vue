@@ -79,6 +79,7 @@ defineExpose({ close, cardRef });
 /* From Uiverse.io by akshat-patel28 */
 .card {
   position: fixed;
+  z-index: 100;
   width: 330px;
   height: 60px;
   border-radius: 15px;

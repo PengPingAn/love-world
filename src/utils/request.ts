@@ -2,7 +2,7 @@ import axios, { type AxiosRequestConfig, AxiosError, type Method } from 'axios'
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: '/api', // 根据项目环境配置
+  baseURL: import.meta.env.VITE_API_BASE_URL, // 根据项目环境配置
   timeout: 10000 // 默认超时时间：10秒
 })
 
@@ -21,7 +21,8 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     const data = response.data
-    if (data.code !== undefined && data.code !== 200) {
+    if (data.code !== undefined && data.code !== 200 && data.code !== 102) {
+      window.$message.error(data.message)
       return Promise.reject(data)
     }
     return data

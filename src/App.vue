@@ -4,7 +4,7 @@ import Head from "./components/head.vue";
 import Foot from "@/views/foot/index.vue";
 import ThemeTransition from "./components/ThemeTransition.vue";
 import { useRoute } from "vue-router";
-import { getSocketId } from "@/api/homt";
+import { getSocketId } from "@/api/home";
 import { getBrowserFingerprint } from "@/utils/useFingerprint";
 import useWebSocket from "@/utils/websocket";
 
@@ -117,8 +117,7 @@ watchEffect(() => {
     console.log("[WS] 收到消息：", data);
     switch (data.type) {
       case "pong":
-
-      break;
+        break;
       case "scoketCount":
         socketCount.value = data.data;
         break;
@@ -150,6 +149,7 @@ watch(route, () => {
     </div>
 
     <loading />
+    <LocalLoading />
     <HoverButton />
     <Foot />
   </div>
@@ -160,6 +160,7 @@ watch(route, () => {
 <style lang="scss">
 body {
   background: var(--background);
+  font-family: "Noto Serif SC", serif;
 }
 
 body:before {
