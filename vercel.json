@@ -3,6 +3,10 @@
     {
       "source": "/PDemoApi/:path*",
       "destination": "http://118.145.200.78/PDemoApi/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
